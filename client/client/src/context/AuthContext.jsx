@@ -23,9 +23,9 @@ export const AuthProvider = ({ children }) => {
             setUser({
                 username: foundUser.username, role: foundUser.role
             });
-            return true;
+            return foundUser;
         }
-        return false;
+        return null;
     }
 
     const logout = () => {

@@ -7,14 +7,18 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const { login } = useAuth();
+    const { login } = useAuth(); // to dokładam pobranie usera
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const success = login(username, password);
-        if (success) {
-            navigate('/');
+        const user = login(username, password);
+        if (user) {
+            if(user.role === 'admin') {
+                navigate('/admin', { replace: true }); // przenosi na dashboard
+            } else {
+                navigate('/user', { replace: true }); // a to przenosi na user home
+            }
         } else {
             setError('☹️ Invalid username or password!')
         }
