@@ -1,0 +1,38 @@
+# Node modules
+node_modules/
+/.pnp
+.pnp.js
+
+# Logi
+logs/
+*.log
+
+# testing
+/coverage
+
+# production
+/build
+
+# Pliki środowiskowe (tu masz hasło do MongoDB!)
+.env
+
+# Systemowe / edytora
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Pliki testowe Postmana (jeśli nie chcesz ich udostępniać)
+*.postman_collection.json
+
+# Buildy (jeśli kiedyś zbudujesz front)
+dist/
+build/
+
+# Jeśli dodasz React w tym samym repo
+client/node_modules/
+client/build/
+
+# misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
