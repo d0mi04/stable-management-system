@@ -35,7 +35,7 @@ function App() {
             <Route element={<PrivateRoute requiredRole="admin" />}>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Dashboard />} />
-                <Route path="horses" element={<Horses />} />
+                <Route path="horses/*" element={<Horses />} />
                 <Route path="horses/:id" element={<HorseDetails />} />
                 <Route path="stables" element={<Stables />} />
                 <Route path="schedule" element={<Schedule />} />
