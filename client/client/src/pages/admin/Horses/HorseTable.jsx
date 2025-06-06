@@ -1,14 +1,35 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const HorseTable = () => {
     const[horses, setHorses] = useState([]);
+    const[loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('http://localhost:5000/horses')
+        fetch(`${API_URL}horses`)
             .then((res) => res.json())
-            .then((data) => setHorses(data.horses))
-            .catch((err) => console.error('Error fetching horses:', err));
+            .then((data) => {
+                setHorses(data.horses || []);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error('Error fetching horses:', err);
+                setLoading(true);
+            });
     }, []);
+
+    if(loading) {
+        return (
+            <p>Loading horses</p>
+        );
+    }
+
+    if(horses.length === 0) {
+        return (
+            <p>No horses found.</p>
+        );
+    }
 
     return (
         <div>
@@ -29,6 +50,9 @@ const HorseTable = () => {
                             <td>{horse.age}</td>
                             <td>{horse.breed}</td>
                             <td>{horse.stable}</td>
+                            <td>
+                                <Link to={`${horse._id}/edit`}>Edit</Link>
+                            </td>
                         </tr>
                     ))}
                 </tbody>

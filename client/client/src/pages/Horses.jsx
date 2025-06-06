@@ -1,21 +1,22 @@
 import React from "react";
-import { Outlet, Link } from 'react-router-dom';
-import HorseForm from "./admin/Horses/HorseForm";
-
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import HorseTable from "./admin/Horses/HorseTable";
-import { Routes, Route } from 'react-router-dom';
 
 const Horses = () => {
+  const location = useLocation();
+  const isBasePath = location.pathname === "/admin/horses";
+  
   return (
     <div>
       <h2>Horses (Admin only)</h2>
 
       <Link to="add">Add new Horse</Link>
+      
+      {/* teraz wyświetlamy wszystkie konie */}
+      {isBasePath && <HorseTable />}
 
+      {/* tu ma się renderować formularz dodawania lub edycji */}
       <Outlet />
-      <Routes>
-        <Route index element={<HorseTable />} />
-      </Routes>
     </div>
   );
 };
