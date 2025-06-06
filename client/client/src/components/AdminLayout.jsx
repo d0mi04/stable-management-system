@@ -1,7 +1,18 @@
 import React from "react";
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const AdminLayout = () => {
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login'); // po wylogowaniu przenosi na stronę /login
+    };
+
+    if(!user || user.role !== 'admin') return null;
+
     return (
         <div>
             <nav>
@@ -13,6 +24,7 @@ const AdminLayout = () => {
                     <li><Link to="/admin/staff">Staff</Link></li>
                     <li><Link to="/admin/expenses">Expenses</Link></li>
                     <li><Link to="/admin/settings">Settings</Link></li>
+                    <li><button onClick={handleLogout}>Log out</button></li>
                 </ul>
             </nav>
             <main>
