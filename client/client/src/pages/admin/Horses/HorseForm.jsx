@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const HorseForm = () => {
     const { id } = useParams();
@@ -14,7 +15,7 @@ const HorseForm = () => {
 
     useEffect(() => {
         if(id) {
-            fetch(`http://localhost:5000/horses/${id}`)
+            fetch(`${API_URL}/horses/${id}`)
                 .then((res) => res.json())
                 .then((data) => setHorse(data))
                 .catch((err) => console.error('Error fetching horse data:', err)); 
@@ -28,7 +29,7 @@ const HorseForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const method = id ? 'PUT' : 'POST';
-        const url = id ? `http://localhost:5000/horses/${id}` : 'http://localhost:5000/horses';
+        const url = id ? `${API_URL}/horses/${id}` : '${API_URL}/horses';
 
         try {
             await fetch(url, {

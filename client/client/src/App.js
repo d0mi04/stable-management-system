@@ -35,7 +35,13 @@ function App() {
             <Route element={<PrivateRoute requiredRole="admin" />}>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Dashboard />} />
-                <Route path="/admin/horses/*" element={<Horses />} />
+
+                {/* changed basic logic for Horses to more complex adding form */}
+                <Route path="horses" element={<Horses />}>
+                  <Route path="add" element={<HorseForm />} />
+                  <Route path=":id/edit" element={<HorseForm />} />
+                </Route>
+                
                 <Route path="horses/:id" element={<HorseDetails />} />
                 <Route path="stables" element={<Stables />} />
                 <Route path="schedule" element={<Schedule />} />

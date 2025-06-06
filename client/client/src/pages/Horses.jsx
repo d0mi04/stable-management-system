@@ -8,7 +8,6 @@ const Horses = () => {
       <h2>Horses (Admin only)</h2>
 
       <Link to="add">Add new Horse</Link>
-      <HorseForm />
 
       <Outlet />
     </div>
