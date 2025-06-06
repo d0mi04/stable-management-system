@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
+// adding routes files:
+const stallRoutes = require('./routes/stalls');
 const horseRoutes = require('./routes/horses');
 
 const app = express();
@@ -21,6 +23,8 @@ mongoose.connect(process.env.MONGO_URI)
     })
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
+// using routes:
+app.use('/stalls', stallRoutes);
 app.use('/horses', horseRoutes);
 
 // start:
