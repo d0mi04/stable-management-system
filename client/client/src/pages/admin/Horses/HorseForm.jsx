@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
+import './HorseFormStyles.css';
+
 const API_URL = process.env.REACT_APP_API_URL;
 
 const HorseForm = () => {
@@ -30,7 +32,7 @@ const HorseForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const method = horseID ? 'PUT' : 'POST'; // jak istnieje horseID - to wybieramy metodę PUT
-        const url = horseID ? `${API_URL}/horses/${horseID}` : `${API_URL}/horses`;
+        const url = horseID ? `${API_URL}horses/${horseID}` : `${API_URL}horses`;
 
         try {
             const res = await fetch(url, {
@@ -53,7 +55,7 @@ const HorseForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="horse-form" onSubmit={handleSubmit}>
             <h2>{horseID ? 'Edit Horse' : 'Add new Horse'}</h2>
             <input
                 type="text"

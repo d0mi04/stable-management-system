@@ -1,0 +1,41 @@
+body {
+    background-color: #F2E8C9;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.horse-form {
+    max-width: 500px;
+    margin: 0;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin-bottom: 16px;
+    color: #8C4E2A;
+}
+
+input {
+    width: 80%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #D9C896;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+button {
+    background-color: #8C4E2A;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #594B02;
+}
