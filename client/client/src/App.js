@@ -12,6 +12,7 @@ import UserLayout from './components/UserLayout';
 
 import Dashboard from './pages/Dashboard'; // admin
 import Horses from './pages/Horses';
+import HorseForm from "./pages/admin/Horses/HorseForm";
 import HorseDetails from './pages/HorseDetails'; // admin
 import Stables from './pages/Stables'; // most likely admin
 import Staff from './pages/Staff'; // most likely admin
@@ -36,15 +37,11 @@ function App() {
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Dashboard />} />
 
-
                 {/* changed basic logic for Horses to more complex adding form */}
                 <Route path="horses" element={<Horses />}>
                   <Route path="add" element={<HorseForm />} />
                   <Route path=":id/edit" element={<HorseForm />} />
                 </Route>
-                
-
-                <Route path="horses/*" element={<Horses />} />
 
                 <Route path="horses/:id" element={<HorseDetails />} />
                 <Route path="stables" element={<Stables />} />
