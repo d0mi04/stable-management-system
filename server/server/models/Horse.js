@@ -5,6 +5,7 @@ const horseSchema = new mongoose.Schema ({
     age: { type: Number },
     breed: { type: String },
     owner: { type: String },
+    ownerEmail: { type: String, required: true},
     stallId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stall' },
     notes: { type: String }
 }, {

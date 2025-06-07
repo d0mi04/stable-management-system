@@ -13,6 +13,7 @@ const HorseForm = () => {
         age: '',
         breed: '',
         owner: '',
+        ownerEmail: '',
         stable: '',
     });
 
@@ -47,6 +48,22 @@ const HorseForm = () => {
 
             const data = await res.json();
             console.log('Horse saved: ', data);
+
+            // wysyłanie maila do właściciela konia - jeśli to nowy koń:
+            if (!horseID) {
+                const mailParams = new URLSearchParams({
+                    name: horse.owner,
+                    email: horse.ownerEmail,
+                    body: `Hello ${horse.owner}, \n\nYour horse ${horse.name} has been successfully added to our Stable System and is waiting for stall assignment. \n\nGo slay 🦄✨`,
+                });
+
+                fetch(`https://emial-stable-manager-381376669818.europe-west1.run.app/?${mailParams.toString()}`, {
+                    method: 'GET'
+                })
+                    .then(response => response.text())
+                    .then(result => console.log("Email sent: ", result))
+                    .catch(err => console.error("Email sending failed", err));
+            }
 
             navigate('/admin/horses');
         } catch (err) {
@@ -86,6 +103,14 @@ const HorseForm = () => {
                 name="owner"
                 placeholder="Horse Owner"
                 value={horse.owner}
+                onChange={handleChange}
+                required
+            />
+            <input
+                type="text"
+                name="ownerEmail"
+                placeholder="Owner Email"
+                value={horse.ownerEmail}
                 onChange={handleChange}
                 required
             />
