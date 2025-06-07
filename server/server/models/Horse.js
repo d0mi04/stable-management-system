@@ -7,8 +7,6 @@ const horseSchema = new mongoose.Schema ({
     owner: { type: String },
     stallId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stall' },
     notes: { type: String }
-}, {
-    timestamps: true
 });
 
 module.exports = mongoose.model('Horse', horseSchema);
