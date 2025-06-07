@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import './HorseFormStyles.css';
 
 const API_URL = process.env.REACT_APP_API_URL;
+const CONFIRMATION_URL = process.env.REACT_APP_AWS_EMAIL_SEND;
 
 const HorseForm = () => {
     const { horseID } = useParams();
@@ -57,7 +58,7 @@ const HorseForm = () => {
                     body: `Hello ${horse.owner}, \n\nYour horse ${horse.name} has been successfully added to our Stable System and is waiting for stall assignment. \n\nGo slay 🦄✨`,
                 });
 
-                fetch(`https://emial-stable-manager-381376669818.europe-west1.run.app/?${mailParams.toString()}`, {
+                fetch(`${CONFIRMATION_URL}/?${mailParams.toString()}`, {
                     method: 'GET'
                 })
                     .then(response => response.text())
@@ -120,7 +121,6 @@ const HorseForm = () => {
                 placeholder="Horse Stable"
                 value={horse.stable}
                 onChange={handleChange}
-                required
             />
             <button type="submit">{horseID ? 'Update' : 'Create'}</button>
         </form>

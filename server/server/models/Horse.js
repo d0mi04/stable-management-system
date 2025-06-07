@@ -6,7 +6,7 @@ const horseSchema = new mongoose.Schema ({
     breed: { type: String },
     owner: { type: String },
     ownerEmail: { type: String, required: true},
-    stallId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stall' },
+    stallId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stall', default: null },
     notes: { type: String }
 }, {
     timestamps: true
