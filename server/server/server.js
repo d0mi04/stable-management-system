@@ -8,6 +8,7 @@ const stallRoutes = require('./routes/stalls');
 const horseRoutes = require('./routes/horses');
 const staffRoutes = require('./routes/staff');
 const stableRoutes = require('./routes/stables');
+const horseActivityRoutes = require('./routes/horseActivities');
 
 const app = express();
 app.use(cors());
@@ -25,6 +26,7 @@ app.use('/stalls', stallRoutes);
 app.use('/horses', horseRoutes);
 app.use('/staff', staffRoutes);
 app.use('/stables', stableRoutes);
+app.use('/horseActivities', horseActivityRoutes);
 
 // start:
 const PORT = process.env.PORT || 5000;
