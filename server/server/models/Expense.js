@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const expenseSchema = new mongoose.Schema({
-    date: { type: Data, required: true }, // 2025-06-01
+    date: { type: Date, required: true }, // 2025-06-01
     type: { type: String, enum: ['expense', 'income'], required: true }, // expense or income
     category: { type: String, required: true }, // rent, horse food, repair
     relatedTo: { type: mongoose.Schema.Types.ObjectId, refPath: 'relatedModel' },
