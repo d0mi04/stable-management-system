@@ -6,15 +6,11 @@ require('dotenv').config();
 // adding routes files:
 const stallRoutes = require('./routes/stalls');
 const horseRoutes = require('./routes/horses');
+const staffRoutes = require('./routes/staff');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// test route
-app.get('/', (req, res) => {
-    res.send('Stable Manager API')
-});
 
 // mongoDB connection:
 mongoose.connect(process.env.MONGO_URI)
@@ -26,6 +22,7 @@ mongoose.connect(process.env.MONGO_URI)
 // using routes:
 app.use('/stalls', stallRoutes);
 app.use('/horses', horseRoutes);
+app.use('/staff', staffRoutes);
 
 // start:
 const PORT = process.env.PORT || 5000;
