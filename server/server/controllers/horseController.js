@@ -15,6 +15,21 @@ exports.getAllHorses = async (req, res) => {
     }
 };
 
+// GET /horses/admin/waiting
+exports.getHorsesWaitingForStall = async (req, res) => {
+    try {
+        const horses = await Horse.find({ status: 'waiting for stall' });
+        res.status(200).json({
+            horses: horses
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: '🍎 Internal error while fetching waiting horses'
+        });
+    }
+};
+
 // GET /horses/:horseID
 exports.getHorseById = async (req, res) => {
     try {
@@ -38,7 +53,7 @@ exports.getHorseById = async (req, res) => {
     }
 };
 
-// POST /horses
+// POST /horses --> user create horse, added midleware
 exports.createHorse = async (req, res) => {
     try{
         const { name, birthDate, breed, notes } = req.body;
@@ -49,7 +64,6 @@ exports.createHorse = async (req, res) => {
             notes,
             owner: req.user.userId,
             ownerEmail: req.user.email,
-            stallId: null,
             status: 'waiting for stall'
         });
         await horse.save();
@@ -61,6 +75,43 @@ exports.createHorse = async (req, res) => {
         console.log(err);
         res.status(400).json({
             message: '🍎 Invalid request',
+            error: err.message
+        });
+    }
+};
+
+// PUT /horses/:horseID/asign-stall --> admin assigning stall to horse
+exports.assignStallToHorse = async (req, res) => {
+    const { horseID } = req.params; // to jest to samo co const horseId = req.params.horseID
+    const { stallID } = req.body;
+
+    try {
+        const horse = await Horse.findById(horseID);
+        if(!horse) {
+            return res.status(404).json({
+                message: '🍎 Horse not found'
+            });
+        }
+
+        if(horse.stallId) { // sprawdzenie, czy koń nie ma już przypisanego boksu
+            return res.status(400).json({
+                message: '🍎 Horse already has a stall assigned'
+            });
+        }
+
+        horse.stallId = stallID;
+        horse.status = 'stall granted';
+
+        await horse.save();
+
+        res.status(200).json({
+            message: '🍏 Stall assigned to horse!',
+            horse: horse
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: '🍎 Internal error assigning stall',
             error: err.message
         });
     }
