@@ -10,7 +10,7 @@ router.get('/:horseID', horseController.getHorseById); // ścieżki ogólne /:id
 
 router.post('/', verifyToken, horseController.createHorse);
 
-router.put('/:horseID', horseController.updateHorse);
+router.put('/:horseID', verifyToken, horseController.updateHorse);
 router.put('/:horseID/assign-stall', verifyToken, isAdmin, horseController.assignStallToHorse); // przypisanie koniowi boksu
 router.put('/:horseID/unassign-stall', verifyToken, isAdmin, horseController.unassignStallToHorse); // wypisanie konia z boksu
 
