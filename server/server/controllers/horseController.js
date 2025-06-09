@@ -1,5 +1,6 @@
 const Horse = require('../models/Horse');
 const Stall = require('../models/Stall');
+const User = require('../models/User');
 
 // GET /horses
 exports.getAllHorses = async (req, res) => {
@@ -68,6 +69,12 @@ exports.createHorse = async (req, res) => {
             status: 'waiting for stall'
         });
         await horse.save();
+
+        // dodanie konia do listy my-horses użytkownika, który tworzy konia:
+        await User.findByIdAndUpdate(req.user.userId, {
+            $addToSet: { myHorses: horse._id }
+        });
+
         res.status(201).json({
             message: '🍏 Horse was successfully created!',
             horse: horse
@@ -200,16 +207,29 @@ exports.updateHorse = async (req, res) => {
     try {
         const horseId = req.params.horseID;
         const updatedHorseData = req.body;
-        const updatedHorse = await Horse.findByIdAndUpdate(horseId, updatedHorseData, {
-            new: true, // zwraca nowy dokument po aktualizacji
-            runValidators: true, // sprawdza zgodność ze schemą
-        });
 
-        if(!updatedHorse) {
+        const horse = await Horse.findById(horseId);
+        if(!horse) {
             return res.status(404).json({
                 message: '🍎 Horse not found'
             });
         }
+
+        // sprawdzenie, czy użytkownik jest właścicielem:
+        const isOwner = req.user.userId === horse.owner.toString();
+        const isAdmin = req.user.role === 'admin'; // tu nie będziemy używać później { isAdmin } bo mogłoby całkiem blokować dostęp userowi
+
+        if(!isOwner && !isAdmin) {
+            return res.status(403).json({
+                message: '🍎 You are not allowed to update this horse'
+            });
+        }
+
+        // aktualizacja danych konia:
+        const updatedHorse = await Horse.findByIdAndUpdate(horseId, updatedHorseData, {
+            new: true, // zwraca nowy dokument po aktualizacji
+            runValidators: true, // sprawdza zgodność ze schemą
+        });
 
         res.status(200).json({
             message: '🍏 Horse updated successfully!',
