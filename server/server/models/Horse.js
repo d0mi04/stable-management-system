@@ -9,7 +9,7 @@ const horseSchema = new mongoose.Schema ({
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     ownerEmail: { type: String },
 
-    stallId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stall', unique: true, default: null, sparse: true}, // sparse - nie będzie wywalać błędu, że wylko jeden koń może mieć null
+    stallId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stall', unique: true, sparse: true, default: undefined }, // przy tworzeniu konia tego pola jeszcze nie ma
     status: { 
         type: String,
         enum: [ 'waiting for stall', 'stall granted', 'available', 'training', 'sick', 'left for competition'],
