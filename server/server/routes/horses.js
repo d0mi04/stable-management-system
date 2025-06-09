@@ -11,7 +11,7 @@ router.get('/:horseID', horseController.getHorseById); // ścieżki ogólne /:id
 router.post('/', verifyToken, horseController.createHorse);
 
 router.put('/:horseID', horseController.updateHorse);
-router.put('/:horseID/assign-stall', verifyToken, horseController.assignStallToHorse); // przypisanie koniowi boksu
+router.put('/:horseID/assign-stall', verifyToken, isAdmin, horseController.assignStallToHorse); // przypisanie koniowi boksu
 
 router.delete('/:horseID', horseController.deleteHorse);
 

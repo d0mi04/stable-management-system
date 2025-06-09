@@ -1,4 +1,5 @@
 const Horse = require('../models/Horse');
+const Stall = require('../models/Stall');
 
 // GET /horses
 exports.getAllHorses = async (req, res) => {
@@ -93,20 +94,44 @@ exports.assignStallToHorse = async (req, res) => {
             });
         }
 
-        if(horse.stallId) { // sprawdzenie, czy koń nie ma już przypisanego boksu
+        // sprawdzenie, czy koń nie ma już przypisanego boksu
+        if(horse.stallId) { 
             return res.status(400).json({
                 message: '🍎 Horse already has a stall assigned'
             });
         }
 
+        // znalezienie boksu, który będzie przypisywany
+        const stall = await Stall.findById(stallID);
+        if(!stall) {
+            return res.status(404).json({
+                message: '🍎 Stall not found'
+            });
+        }
+
+        // czy boks jest dostępny?
+        if(stall.status !== 'available') {
+            return res.status(400).json({
+                message: '🍎 Stall is not available for assignment'
+            });
+        }
+
+        // przypisanie boksu do konia:
         horse.stallId = stallID;
         horse.status = 'stall granted';
 
+        // aktualizacja boksu:
+        stall.horseId = horseID;
+        stall.status = 'occupied';
+
+        // zapisanie obu zmian:
         await horse.save();
+        await stall.save();
 
         res.status(200).json({
-            message: '🍏 Stall assigned to horse!',
-            horse: horse
+            message: '🍏 Stall successfully assigned to horse!',
+            horse: horse,
+            stall: stall
         });
     } catch (err) {
         console.log(err);
