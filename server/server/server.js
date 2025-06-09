@@ -11,6 +11,9 @@ const stableRoutes = require('./routes/stables');
 const horseActivityRoutes = require('./routes/horseActivities');
 const expenseRoutes = require('./routes/expenses');
 
+// authorization:
+const authRoutes = require('./routes/auth');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -23,6 +26,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // using routes:
+app.use('/auth', authRoutes);
 app.use('/stalls', stallRoutes);
 app.use('/horses', horseRoutes);
 app.use('/staff', staffRoutes);
