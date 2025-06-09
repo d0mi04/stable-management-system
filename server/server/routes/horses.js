@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', horseController.getAllHorses);
 
 router.get('/waiting', verifyToken, isAdmin, horseController.getHorsesWaitingForStall); // zwraca listę koni oczekujących na przypisanie do boksu
-router.get('/:horseID', horseController.getHorseById); // ścieżki ogólne /:id - NA KOŃCU!!
+router.get('/:horseID', verifyToken, horseController.getHorseById); // ścieżki ogólne /:id - NA KOŃCU!!
 
 router.post('/', verifyToken, horseController.createHorse);
 
