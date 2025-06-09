@@ -5,7 +5,7 @@ const User = require('../models/User');
 // GET /horses
 exports.getAllHorses = async (req, res) => {
     try {
-        const horses = await Horse.find().populate('stallId');
+        const horses = await Horse.find().select('name birthDate breed notes ownerEmail')  // filtowanie, żeby nie było widać wrażliwych danych
         res.status(200).json({
             horses
         });
@@ -36,15 +36,26 @@ exports.getHorsesWaitingForStall = async (req, res) => {
 exports.getHorseById = async (req, res) => {
     try {
         const horseId = req.params.horseID;
-        const horse = await Horse.findById(horseId);
+        const horse = await Horse.findById(horseId).populate('stallId');
+        
         if(!horse) {
             return res.status(404).json({
                 message: '🍎 Horse not found'
             });
         }
 
+        // sprawdzenie, czy użytkownik jest właścicielem:
+        const isOwner = req.user.userId === horse.owner.toString();
+        const isAdmin = req.user.role === 'admin'; // tu nie będziemy używać później { isAdmin } bo mogłoby całkiem blokować dostęp userowi
+
+        if(!isOwner && !isAdmin) {
+            return res.status(403).json({
+                message: '🍎 You are not allowed to display this horse'
+            });
+        }
+
         res.status(200).json({
-            horse
+            horse: horse
         });
     } catch (err) {
         console.log(err);
