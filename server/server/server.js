@@ -14,6 +14,10 @@ const authRoutes = require('./routes/auth');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://accounts.google.com; object-src 'none';");
+  next();
+});
 
 // test route
 app.get('/', (req, res) => {

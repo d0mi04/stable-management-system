@@ -22,6 +22,8 @@ import Settings from './pages/Settings'; // admin
 import UserHome from './pages/UserHome';
 import Schedule from './pages/Schedule';
 
+import LoginGoogle from "./components/LoginGoogle";
+
 function App() {
   return (
     <AuthProvider>

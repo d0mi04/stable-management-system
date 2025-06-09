@@ -1,0 +1,85 @@
+.calendar-container {
+  max-width: 800px;
+  margin: auto;
+  font-family: sans-serif;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1em 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: #ccc;
+}
+
+.calendar-day-name {
+  background: #eee;
+  text-align: center;
+  padding: 0.5em;
+  font-weight: bold;
+}
+
+.calendar-cell {
+  background: #fff;
+  min-height: 80px;
+  padding: 4px;
+  border: 1px solid #ddd;
+}
+
+.calendar-cell.other-month {
+  background: #f8f8f8;
+  color: #aaa;
+}
+
+.calendar-date {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.event {
+  background: #e3f2fd;
+  margin-top: 2px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.add-event-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 1em;
+  flex-wrap: wrap;
+}
+
+.add-event-form input {
+  padding: 4px;
+  font-size: 14px;
+}
+
+.add-event-form button {
+  padding: 4px 10px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-event-form button:hover {
+  background: #145ea8;
+}
+
+.local-event {
+  background: #ffe0b2;
+  margin-top: 2px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #6d4c41;
+}
