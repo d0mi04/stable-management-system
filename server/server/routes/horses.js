@@ -5,6 +5,7 @@ const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.get('/', horseController.getAllHorses);
+
 router.get('/waiting', verifyToken, isAdmin, horseController.getHorsesWaitingForStall); // zwraca listę koni oczekujących na przypisanie do boksu
 router.get('/:horseID', horseController.getHorseById); // ścieżki ogólne /:id - NA KOŃCU!!
 
@@ -14,6 +15,6 @@ router.put('/:horseID', verifyToken, horseController.updateHorse);
 router.put('/:horseID/assign-stall', verifyToken, isAdmin, horseController.assignStallToHorse); // przypisanie koniowi boksu
 router.put('/:horseID/unassign-stall', verifyToken, isAdmin, horseController.unassignStallToHorse); // wypisanie konia z boksu
 
-router.delete('/:horseID', horseController.deleteHorse);
+router.delete('/:horseID', verifyToken, horseController.deleteHorse);
 
 module.exports = router;
