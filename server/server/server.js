@@ -6,6 +6,7 @@ require('dotenv').config();
 // adding routes files:
 const stallRoutes = require('./routes/stalls');
 const horseRoutes = require('./routes/horses');
+const eventsRouter = require("./routes/events");
 
 // authorization:
 const authRoutes = require('./routes/auth');
@@ -30,6 +31,7 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/auth', authRoutes);
 app.use('/stalls', stallRoutes);
 app.use('/horses', horseRoutes);
+app.use("/events", eventsRouter);
 
 // start:
 const PORT = process.env.PORT || 5000;
