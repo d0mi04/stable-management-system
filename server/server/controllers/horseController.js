@@ -248,15 +248,42 @@ exports.updateHorse = async (req, res) => {
 exports.deleteHorse = async (req, res) => {
     try {
         const horseId = req.params.horseID;
+        const userId = req.user.userId;
+
         const deletedHorse = await Horse.findById(horseId);
-        
         if(!deletedHorse) {
             return res.status(404).json({
                 message: '🍎 Horse not found'
             });
         }
 
+        // sprawdzenie, czy użytkownik jest właścicielem:
+        const isOwner = userId === deletedHorse.owner.toString();
+        const isAdmin = req.user.role === 'admin'; // tu nie będziemy używać później { isAdmin } bo mogłoby całkiem blokować dostęp userowi
+
+        if(!isOwner && !isAdmin) {
+            return res.status(403).json({
+                message: '🍎 You are not allowed to delete this horse'
+            });
+        }
+
+        // najpierw trzeba zwolnić boks - o ile koń miał boks
+        if(deletedHorse.stallId) {
+            await Stall.findByIdAndUpdate(deletedHorse.stallId, {
+                $set: {
+                    horseId: null,
+                    status: 'available'
+                }
+            });
+        }
+        
+        // usuwanie konia z kolekcji koni
         await deletedHorse.deleteOne();
+
+        // trzeba usunąć konia z listy myHorses:
+        await User.findByIdAndUpdate(deletedHorse.owner, { // używam deletedHorse.owner, a nie userID - bo jak admin usuwa konia, to żeby użytkownikowi usunął
+            $pull: { myHorses: horseId }
+        });
 
         res.status(200).json({
             message: '🍏 Horse deleted successfully.',
