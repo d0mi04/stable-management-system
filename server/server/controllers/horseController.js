@@ -41,7 +41,17 @@ exports.getHorseById = async (req, res) => {
 // POST /horses
 exports.createHorse = async (req, res) => {
     try{
-        const horse = new Horse(req.body);
+        const { name, birthDate, breed, notes } = req.body;
+        const horse = new Horse({
+            name,
+            birthDate,
+            breed,
+            notes,
+            owner: req.user.userId,
+            ownerEmail: req.user.email,
+            stallId: null,
+            status: 'waiting for stall'
+        });
         await horse.save();
         res.status(201).json({
             message: '🍏 Horse was successfully created!',
