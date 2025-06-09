@@ -142,6 +142,59 @@ exports.assignStallToHorse = async (req, res) => {
     }
 };
 
+// PUT /horses/:horseID/unassign-stall --> tylko dla admina
+exports.unassignStallToHorse = async (req, res) => {
+    const { horseID } = req.params;
+    
+    try {
+        const horse = await Horse.findById(horseID);
+
+        if(!horse) {
+            return res.status(404).json({
+                message: '🍎 Horse not found'
+            });
+        }
+
+        if(!horse.stallId) {
+            return res.status(400).json({
+                message: '🍎 No stall ASSIGNED to horse'
+            });
+        }
+
+        const stall = await Stall.findById(horse.stallId);
+        if(!stall) {
+            return res.status(404).json({
+                message: '🍎 Stall not found'
+            });
+        }
+
+        // w końcu: wypisywanie konia z boksu:
+        horse.stallId = null;
+        horse.status = 'waiting for stall';
+
+        // wypisywanie konia z boksu po stronie boksu:
+        stall.horseId = null;
+        stall.status = 'available';
+
+        // zapisanie zmian:
+        await horse.save();
+        await stall.save();
+
+        res.status(200).json({
+            message: '🍏 Stall successfully UNASSIGNED to horse!',
+            horse: horse,
+            stall: stall
+        });
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: '🍎 Internal error assigning stall',
+            error: err.message
+        });
+    }
+}
+
 // PUT /horses/:horseID
 exports.updateHorse = async (req, res) => {
     try {
