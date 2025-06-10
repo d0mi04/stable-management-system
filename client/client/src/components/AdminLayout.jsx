@@ -20,7 +20,7 @@ const AdminLayout = () => {
                     <li><Link to="/admin">Dashboard</Link></li>
                     <li><Link to="/admin/horses">Horses</Link></li>
                     <li><Link to="/admin/stables">Stables</Link></li>
-                    <li><Link to="/admin/schedule">Schedule</Link></li>
+                    <li><Link to="/admin/scheduleAdmin">ScheduleAdmin</Link></li>
                     <li><Link to="/admin/staff">Staff</Link></li>
                     <li><Link to="/admin/expenses">Expenses</Link></li>
                     <li><Link to="/admin/settings">Settings</Link></li>

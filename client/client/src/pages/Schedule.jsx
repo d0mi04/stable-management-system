@@ -11,6 +11,8 @@ const GoogleCalendar = () => {
   const [error, setError] = useState(null);
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [token, setToken] = useState(null);
+  
+  const ownerId = '684616f071c979941133fe47';
 
   const [newEvent, setNewEvent] = useState({
     summary: "",
@@ -66,7 +68,7 @@ useEffect(() => {
       const results = await Promise.all(
         days.map(async (d) => {
           const dateStr = d.toDateString(); 
-          const res = await fetch(`${API_URL}events/${dateStr}`);
+          const res = await fetch(`${API_URL}events/${dateStr}/${ownerId}`);
           if (!res.ok) return [];
           const data = await res.json();
           return data;
@@ -184,8 +186,9 @@ useEffect(() => {
 
               {lEvents.map((e) => (
                 <div key={e._id} className="event local-event">
-                  🗂 {e.title}
+                  🗂 {e.title} {e.horseId?.name ? `– ${e.horseId.name}` : ""}
                 </div>
+
               ))}
             </div>
           );

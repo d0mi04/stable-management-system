@@ -18,6 +18,7 @@ import Stables from './pages/Stables'; // most likely admin
 import Staff from './pages/Staff'; // most likely admin
 import Expenses from './pages/Expenses'; // admin
 import Settings from './pages/Settings'; // admin
+import ScheduleAdmin from './pages/ScheduleAdmin'; // admin
 
 import UserHome from './pages/UserHome';
 import Schedule from './pages/Schedule';
@@ -47,7 +48,7 @@ function App() {
 
                 <Route path="horses/:id" element={<HorseDetails />} />
                 <Route path="stables" element={<Stables />} />
-                <Route path="schedule" element={<Schedule />} />
+                <Route path="scheduleAdmin" element={<ScheduleAdmin />} />
                 <Route path="staff" element={<Staff />} />
                 <Route path="expenses" element={<Expenses />} />
                 <Route path="settings" element={<Settings />} />
