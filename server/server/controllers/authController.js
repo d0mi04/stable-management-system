@@ -17,9 +17,10 @@ exports.register = async (req, res) => {
         const passwordHash = await bcrypt.hash(password, salt);
 
         const newUser = new User({
-            username,
             email,
-            password: passwordHash
+            username,
+            password: passwordHash,
+            role: 'user' // admin jest tworzony na sztywno w bazie
         });
 
         await newUser.save();
@@ -50,7 +51,8 @@ exports.login = async (req, res) => {
         const token = jwt.sign(
             {
                 userId: user._id,
-                email: user.email
+                email: user.email,
+                role: user.role // to potrzeba żeby mógł wchodzić do flow dla admina
             },
             process.env.JWT_SECRET,
             {
