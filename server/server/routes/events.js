@@ -20,7 +20,7 @@ router.get("/:date/:ownerId", async (req, res) => {
       .exec();
 
     // Filtrowanie wydarzeń, których koń ma ownera o podanym ID
-    const filtered = events.filter(ev => ev.horseId?.owner === req.params.ownerId);
+    const filtered = events.filter(ev => String(ev.horseId?.owner) === String(req.params.ownerId));
 
     res.json(filtered);
   } catch (err) {
