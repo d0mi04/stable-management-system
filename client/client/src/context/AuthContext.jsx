@@ -51,4 +51,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 // hook do używania kontekstu w komponentach
-export const useAuth = () => useContext(AuthContext);
+// export const useAuth = () => useContext(AuthContext);
