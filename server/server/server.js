@@ -7,6 +7,10 @@ require('dotenv').config();
 const stallRoutes = require('./routes/stalls');
 const horseRoutes = require('./routes/horses');
 const eventsRouter = require("./routes/events");
+const staffRoutes = require('./routes/staff');
+const stableRoutes = require('./routes/stables');
+const horseActivityRoutes = require('./routes/horseActivities');
+const expenseRoutes = require('./routes/expenses');
 
 // authorization:
 const authRoutes = require('./routes/auth');
@@ -17,11 +21,6 @@ app.use(express.json());
 app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy", "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://accounts.google.com; object-src 'none';");
   next();
-});
-
-// test route
-app.get('/', (req, res) => {
-    res.send('Stable Manager API')
 });
 
 // mongoDB connection:
@@ -36,6 +35,10 @@ app.use('/auth', authRoutes);
 app.use('/stalls', stallRoutes);
 app.use('/horses', horseRoutes);
 app.use("/events", eventsRouter);
+app.use('/staff', staffRoutes);
+app.use('/stables', stableRoutes);
+app.use('/horseActivities', horseActivityRoutes);
+app.use('/expenses', expenseRoutes);
 
 // start:
 const PORT = process.env.PORT || 5000;

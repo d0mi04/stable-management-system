@@ -4,11 +4,17 @@ const horseSchema = new mongoose.Schema ({
     name: { type: String, required: true },
     birthDate: { type: Date },
     breed: { type: String },
-    owner: { type: String },
+    notes: { type: String },
+
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     ownerEmail: { type: String },
-    stallId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stall', unique: true, default: null, sparse: true}, // sparse - nie będzie wywalać błędu, że wylko jeden koń może mieć null
-    status: { type: String }, // available, training, sick, left for competition
-    notes: { type: String }
+
+    stallId: { type: mongoose.Schema.Types.ObjectId, ref: 'Stall', default: null }, // przy tworzeniu konia tego pola jeszcze nie ma
+    status: { 
+        type: String,
+        enum: [ 'waiting for stall', 'stall granted', 'available', 'training', 'sick', 'left for competition'],
+        default: 'waiting for stall' 
+    } // available, training, sick, left for competition
 });
 
 module.exports = mongoose.model('Horse', horseSchema);
