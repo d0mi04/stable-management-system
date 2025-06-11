@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     myHorses: [
         { type: mongoose.Schema.Types.ObjectId, ref: 'Horse'}
     ],
-    googleId: { type: String }
+    googleId: { type: String, unique: true, sparse: true }
 });
 
 module.exports = mongoose.model('User', userSchema);
