@@ -4,7 +4,7 @@ const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.get('/', horseController.getAllHorses);
+router.get('/', verifyToken, horseController.getAllHorses);
 
 router.get('/waiting', verifyToken, isAdmin, horseController.getHorsesWaitingForStall); // zwraca listę koni oczekujących na przypisanie do boksu
 router.get('/:horseID', verifyToken, horseController.getHorseById); // ścieżki ogólne /:id - NA KOŃCU!!
