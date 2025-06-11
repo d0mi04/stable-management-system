@@ -4,17 +4,18 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const PrivateRoute = ({ requiredRole }) => {
-    const { user } = useAuth();
+    // const { user } = useAuth();
+    const { auth } = useAuth();
 
     // jak user nie jest zalogowany, to przenosi do strony logowania
-    if (!user) {
+    if (!auth.token) {
         return (
             <Navigate to="/login" replace />
         );
     }
 
     // jak chce dostać się do zasobów niedostępnych dla jego roli to przekierowuje na unauthorized
-    if (requiredRole && user.role !== requiredRole) {
+    if (requiredRole && auth.role !== requiredRole) {
         return (
             <Navigate to="/unauthorized" replace />
         );
