@@ -121,7 +121,7 @@
  - **Opis:** Przypisuje boks do konia.
  - **Dostępność:** Wymaga tokenu JWT i roli `admin`.
 
- - **Body (JSON):** zawiera pola do aktualizacji, np.
+ - **Body (JSON):** zawiera ID boksu, do którego chcemy przypisać konia
  ```json
 {
   "stallId": "ID_BOKSU"
