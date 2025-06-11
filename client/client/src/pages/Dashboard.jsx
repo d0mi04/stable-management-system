@@ -1,7 +1,13 @@
 import React from "react";
+import TokenStatus from "../components/TokenStatus";
 
 const Dashboard = () => {
-  return <h2>Dashboard (Admin only)</h2>;
+  return (
+    <div>
+      <h1>Admin Dashboard</h1>
+      <TokenStatus />
+    </div>
+  );
 };
 
 export default Dashboard;
