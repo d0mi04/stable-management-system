@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const passport = require('passport');
 require('dotenv').config();
+require('./config/passport');
 
 // adding routes files:
 const stallRoutes = require('./routes/stalls');
@@ -14,9 +16,15 @@ const expenseRoutes = require('./routes/expenses');
 // authorization:
 const authRoutes = require('./routes/auth');
 
+// 🇬 używanie autoryzacji Google: 
+const oauthRoutes = require('./routes/oauth');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// 🇬 do logowania Google:
+app.use(passport.initialize());
 
 // mongoDB connection:
 mongoose.connect(process.env.MONGO_URI)
@@ -26,6 +34,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // using routes:
+app.use('/oauth', oauthRoutes); // 🇬 logowanie google
 app.use('/auth', authRoutes);
 app.use('/stalls', stallRoutes);
 app.use('/horses', horseRoutes);
