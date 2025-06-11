@@ -11,19 +11,33 @@ passport.use(
     }, 
     async (accessToken, refreshToken, profile, done) => {
     try {
+        // najpierw trzeba znaleźć po googleID czy taki użytkownik już istnieje
         let user = await User.findOne({ googleID: profile.id });
 
-        if(!user) {
-            user = new User({
-                googleID: profile.id,
-                username: profile.displayName,
-                email: profile.emails[0].value,
-                role: 'user'
-            });
-            await user.save();
+        // jeśli użytkownik już się logował przez google
+        if(user) {
+            return done(null, user);
         }
 
-        done(null, user);
+        // jeśli użytkownik nie logował się przez google, to sprawdzamy, czy jest w bazie user z takim mailem:
+        const existingUser = await User.findOne({ email: profile.emails[0].value });
+
+        if(existingUser) {
+            // jak user istnieje, to go aktualizujemy o dane do logowania za pomocą Google
+            existingUser.googleId = profile.id;
+            await existingUser.save();
+            return done(null, existingUser);
+        }
+
+        // zupełnie nowy user - dopiero tworzymy konto:
+        const newUser = new User({
+            googleID: profile.id,
+            username: profile.displayName,
+            email: profile.emails[0].value,
+            role: 'user'
+        });
+        await newUser.save();
+        done(null, newUser);
     } catch (err) {
         done(err, null);
     }

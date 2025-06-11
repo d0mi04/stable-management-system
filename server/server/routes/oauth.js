@@ -7,9 +7,9 @@ const oauthController = require('../controllers/oauthController');
 const router = express.Router();
 
 // teraz endpoint do przekierowania na google
-router.get('/google', passport.authenticate('google', {
-    scope: ['profile', 'email']
-}));
+router.get('/google', 
+    passport.authenticate('google', { scope: ['profile', 'email']})
+);
 
 // callback po autoryzacji z Google
 router.get(
