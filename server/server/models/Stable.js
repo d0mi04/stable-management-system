@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const stableSchema = new mongoose.Schema ({
-    "name": { type: String, required: true, unique: true },
+    "fullName": { type: String, required: true, unique: true },
     "location": { type: String },
     "capacity": { type: Number, required: true },
     "description": { type: String },

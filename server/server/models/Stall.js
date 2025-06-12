@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const stallSchema = new mongoose.Schema({
     stableId: {  type: mongoose.Schema.Types.ObjectId, ref: 'Stable', required: true },
+    name: { type: String, unique: true, required: true }, // 12-SUN --> nazwy to: numer boksu i nazwa stajni
     size: { type: String, enum: ['small', 'medium', 'large'], required: true }, //small - 3x3, medium 3.5x3.5, large 4x4
     status: { 
         type: String, 
