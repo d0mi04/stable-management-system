@@ -1,4 +1,5 @@
 const Stable = require('../models/Stable');
+const Stall = require('../models/Stall');
 
 // GET /stables
 exports.getAllStables = async (req, res) => {
@@ -41,7 +42,32 @@ exports.getStableById = async (req, res) => {
 // POST /stables
 exports.createStable = async (req, res) => {
     try {
-        const stable = new Stable(req.body);
+        const { name, location, capacity, description, stallSize } = req.body;
+
+        const stable = new Stable({
+            fullName: `${name} STABLE`,
+            location: location,
+            capacity: capacity,
+            description: description,
+            stallArray: []
+        });
+        await stable.save();
+
+        // teraz tworzymy tyle boksów jakie podaliśmy capacity
+        const stalls = [];
+        for (let i = 1; i <= capacity; i++) {
+            const newStall = new Stall({
+                stableId: stable._id, // boks ma prsypisane ID stajni, w której się znajduje
+                name: `${i}-${name}`, // name boksu np. 1-SUN
+                size: stallSize // wszystkie boksy w stajni mają ten sam rozmiar
+            });
+
+            await newStall.save();
+            stalls.push(newStall._id);
+        }
+
+        // teraz uzupełnienie tablicy boksów w obiekcie stajnia --> wsm to niekoniecznie musi być, póki co zostawiam, ale może zajmować dodatkowe miejsce w pamięci niepotrzebnie
+        stable.stallArray = stalls;
         await stable.save();
 
         res.status(201).json({
@@ -52,7 +78,7 @@ exports.createStable = async (req, res) => {
         res.status(400).json({
             message: '🍎 Invalid request',
             error: err.message
-        })
+        });
     }
 };
 
