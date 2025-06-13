@@ -1,34 +1,44 @@
-// AuthContext - mockowanie użytkowników
-// tworzy kontekst AuthContext, w którym przechowywany jest aktualny użytkownik user
-// udostępnia funkcje login (usrname, password) i logout() --> na razie logowania są ustawione na sztywno
-// hook useAuth() umożliwia pobranie kontekstu w innych komponentach
 import React, { createContext, useState, useContext } from 'react';
 
 const AuthContext = createContext();
+const API_URL = process.env.REACT_APP_API_URL;
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        const saved = localStorage.getItem('user');
+        return saved ? JSON.parse(saved) : null;
+    });
 
-    // mockowane dane użytkownika
-    const mockUsers = [
-        { username: 'admin', password: 'admin123', role: 'admin' },
-        { username: 'user', password: 'user123', role: 'user'}
-    ];
-
-    const login = (username, password) => {
-        const foundUser = mockUsers.find(
-            (u) => u.username === username && u.password === password
-        );
-        if(foundUser) {
-            setUser({
-                username: foundUser.username, role: foundUser.role
+    const login = async (email, password) => {
+        try {
+            const res = await fetch(`${API_URL}auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
             });
-            return foundUser;
+            const data = await res.json();
+            if (res.ok && data.token) {
+                const token = data.token.replace(/^Bearer\s/, '');
+                localStorage.setItem('token', token);
+                const userObj = {
+                    userId: data.userId,
+                    username: data.username,
+                    role: data.role,
+                    email: data.email
+                };
+                setUser(userObj);
+                localStorage.setItem('user', JSON.stringify(userObj));
+                return userObj;
+            } else {
+                throw new Error(data.message || 'Login failed');
+            }
+        } catch (err) {
+            return null;
         }
-        return null;
-    }
+    };
 
     const logout = () => {
+        localStorage.removeItem('token');
         localStorage.removeItem('user');
         setUser(null);
     };
@@ -40,5 +50,4 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-// hook do używania kontekstu w komponentach
 export const useAuth = () => useContext(AuthContext);

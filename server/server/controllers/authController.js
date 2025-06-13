@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
             {
                 userId: user._id,
                 email: user.email,
-                role: user.role // to potrzeba żeby mógł wchodzić do flow dla admina
+                role: user.role
             },
             process.env.JWT_SECRET,
             {
@@ -64,10 +64,12 @@ exports.login = async (req, res) => {
             message: '🍏 Login successful!',
             userId: user._id,
             username: user.username,
+            role: user.role,        // <-- include role here
+            email: user.email,      // <-- include email here
             token: `Bearer ${token}`
         });
     } catch (err) {
-        req.status(500).json({
+        res.status(500).json({
             message: '🖥 Internal error during login',
             error: err.message
         });
