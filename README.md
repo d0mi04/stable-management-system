@@ -55,6 +55,7 @@ Utwórz plik środowiskowy `.env` w katalogu `client\client` i dodaj do niego po
 
 ```bash
 REACT_APP_API_URL=http://localhost:5000/
+REACT_APP_OPENWEATHER_API_KEY=?
 ```
 
 ---
