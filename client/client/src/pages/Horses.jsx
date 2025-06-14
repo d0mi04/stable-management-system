@@ -401,6 +401,45 @@ const Horses = () => {
   const [availableStalls, setAvailableStalls] = useState([]);
   const [selectedStall, setSelectedStall] = useState("");
 
+  // Filter states
+  const [breedFilter, setBreedFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [ownerFilter, setOwnerFilter] = useState("");
+
+  // Helper function to get status classes
+  const getStatusClasses = (status) => {
+    switch (status) {
+      case 'stall granted':
+        return 'bg-green-50 border-green-400';
+      case 'waiting for stall':
+        return 'bg-red-50 border-red-400';
+      default:
+        return 'bg-gray-50 border-gray-400';
+    }
+  };
+
+  // Filter horses based on selected filters
+  const filteredHorses = React.useMemo(() => {
+    return horses.filter(horse => {
+      const matchesBreed = !breedFilter || horse.breed.toLowerCase().includes(breedFilter.toLowerCase());
+      const matchesStatus = !statusFilter || horse.status === statusFilter;
+      const matchesOwner = !ownerFilter || (horse.ownerEmail && horse.ownerEmail.toLowerCase().includes(ownerFilter.toLowerCase()));
+      return matchesBreed && matchesStatus && matchesOwner;
+    });
+  }, [horses, breedFilter, statusFilter, ownerFilter]);
+
+  // Get unique breeds for filter dropdown
+  const uniqueBreeds = React.useMemo(() => {
+    const breeds = [...new Set(horses.map(horse => horse.breed).filter(Boolean))];
+    return breeds.sort();
+  }, [horses]);
+
+  // Get unique owners for filter dropdown
+  const uniqueOwners = React.useMemo(() => {
+    const owners = [...new Set(horses.map(horse => horse.ownerEmail).filter(Boolean))];
+    return owners.sort();
+  }, [horses]);
+
   const fetchHorses = async () => {
     setLoading(true);
     try {
@@ -623,6 +662,82 @@ const Horses = () => {
             </button>
           </div>
 
+          {/* Horse Filters */}
+          <div className="mb-6">
+            <div className="flex flex-col sm:flex-row gap-4 mb-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Filter by Breed
+                </label>
+                <select
+                  value={breedFilter}
+                  onChange={(e) => setBreedFilter(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                >
+                  <option value="">All Breeds</option>
+                  {uniqueBreeds.map((breed) => (
+                    <option key={breed} value={breed}>
+                      {breed}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Filter by Status
+                </label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                >
+                  <option value="">All Statuses</option>
+                  <option value="stall granted">Stall Assigned</option>
+                  <option value="waiting for stall">Waiting for Stall</option>
+                </select>
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Filter by Owner
+                </label>
+                <select
+                  value={ownerFilter}
+                  onChange={(e) => setOwnerFilter(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent"
+                >
+                  <option value="">All Owners</option>
+                  {uniqueOwners.map((owner) => (
+                    <option key={owner} value={owner}>
+                      {owner}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {(breedFilter || statusFilter || ownerFilter) && (
+                <div className="flex items-end">
+                  <button
+                    onClick={() => {
+                      setBreedFilter("");
+                      setStatusFilter("");
+                      setOwnerFilter("");
+                    }}
+                    className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition duration-150"
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+              )}
+            </div>
+            {(breedFilter || statusFilter || ownerFilter) && (
+              <p className="text-sm text-gray-500">
+                Showing {filteredHorses.length} of {horses.length} horses
+                {breedFilter && ` with breed "${breedFilter}"`}
+                {statusFilter && ` with status "${statusFilter === 'stall granted' ? 'stall assigned' : statusFilter === 'waiting for stall' ? 'waiting for stall' : statusFilter}"`}
+                {ownerFilter && ` owned by "${ownerFilter}"`}
+              </p>
+            )}
+          </div>
+
         {/* Horse Form Modal */}
         {showForm && (
           <HorseForm
@@ -639,94 +754,98 @@ const Horses = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading...</p>
           </div>
-        ) : horses.length === 0 ? (
+        ) : filteredHorses.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-gray-400 mb-4">
               <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <p className="text-gray-500 text-lg">No horses found</p>
-            <p className="text-gray-400">Create your first horse to get started</p>
+            <p className="text-gray-500 text-lg">
+              {(breedFilter || statusFilter || ownerFilter) ? "No horses match your filters" : "No horses found"}
+            </p>
+            <p className="text-gray-400">
+              {(breedFilter || statusFilter || ownerFilter) ? "Try adjusting your filter settings" : "Create your first horse to get started"}
+            </p>
           </div>
         ) : (
           /* Horse Cards Grid */
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {horses.map((horse) => (
-              <div key={horse._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-150 flex flex-col h-full">
+            {filteredHorses.map((horse) => (
+              <div key={horse._id} className={`border-l-4 rounded-lg p-4 hover:shadow-md transition duration-150 ${getStatusClasses(horse.status)}`}>
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="text-lg font-semibold text-gray-800">{horse.name}</h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    horse.status === 'stall granted' ? 'bg-green-100 text-green-800' :
-                    horse.status === 'waiting for stall' ? 'bg-red-100 text-red-700' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {horse.status === 'stall granted' ? 'stall assigned' : 
-                     horse.status === 'waiting for stall' ? 'waiting for stall' : 
-                     'Unknown'}
-                  </span>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleDetails(horse)}
+                      className="text-indigo-600 hover:text-indigo-800 transition duration-150"
+                      title="View Details"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleEdit(horse)}
+                      className="text-indigo-600 hover:text-indigo-800 transition duration-150"
+                      title="Edit Horse"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    {horse.stallId ? (
+                      <button
+                        onClick={() => handleUnassignStall(horse)}
+                        className="text-yellow-600 hover:text-yellow-800 transition duration-150"
+                        title="Unassign Stall"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleAssignStall(horse)}
+                        className="text-green-600 hover:text-green-800 transition duration-150"
+                        title="Assign Stall"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                        </svg>
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDeleteHorse(horse._id)}
+                      className="text-red-600 hover:text-red-800 transition duration-150"
+                      title="Delete Horse"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-                <div className="space-y-2 text-sm text-gray-600 flex-grow">
+                <div className="space-y-2 text-sm text-gray-600">
                   <p><span className="font-medium">Owner:</span> {horse.ownerEmail || "Not assigned"}</p>
                   <p><span className="font-medium">Breed:</span> {horse.breed}</p>
                   <p><span className="font-medium">Age:</span> {horse.age || calculateAge(horse.birthDate)} years</p>
+                  <p>
+                    <span className="font-medium">Status:</span>
+                    <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                      horse.status === 'stall granted' ? 'bg-green-100 text-green-800' :
+                      horse.status === 'waiting for stall' ? 'bg-red-100 text-red-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {horse.status === 'stall granted' ? 'stall assigned' : 
+                       horse.status === 'waiting for stall' ? 'waiting for stall' : 
+                       'Unknown'}
+                    </span>
+                  </p>
                   {horse.notes && (
                     <p><span className="font-medium">Notes:</span> {horse.notes}</p>
                   )}
-                </div>
-                <div className="flex justify-center items-center mt-4 pt-3 border-t border-gray-200">
-                  <button
-                    onClick={() => handleDetails(horse)}
-                    className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition duration-150 p-2 rounded"
-                    title="View Details"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  </button>
-                  <div className="w-px h-4 bg-gray-300 mx-2"></div>
-                  <button
-                    onClick={() => handleEdit(horse)}
-                    className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition duration-150 p-2 rounded"
-                    title="Edit Horse"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
-                  <div className="w-px h-4 bg-gray-300 mx-2"></div>
-                  {horse.stallId ? (
-                    <button
-                      onClick={() => handleUnassignStall(horse)}
-                      className="text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 transition duration-150 p-2 rounded"
-                      title="Unassign Stall"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                      </svg>
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleAssignStall(horse)}
-                      className="text-green-600 hover:text-green-800 hover:bg-green-50 transition duration-150 p-2 rounded"
-                      title="Assign Stall"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-                      </svg>
-                    </button>
-                  )}
-                  <div className="w-px h-4 bg-gray-300 mx-2"></div>
-                  <button
-                    onClick={() => handleDeleteHorse(horse._id)}
-                    className="text-red-600 hover:text-red-800 hover:bg-red-50 transition duration-150 p-2 rounded"
-                    title="Delete Horse"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
                 </div>
               </div>
             ))}

@@ -43,6 +43,18 @@ const AdminLayout = () => {
               Stables
             </Link>
             <Link
+              to="/admin/staff"
+              className="text-gray-700 hover:text-indigo-700 font-medium"
+            >
+              Staff
+            </Link>
+            <Link
+              to="/admin/expenses"
+              className="text-gray-700 hover:text-indigo-700 font-medium"
+            >
+              Expenses
+            </Link>
+            <Link
               to="/admin/scheduleAdmin"
               className="text-gray-700 hover:text-indigo-700 font-medium"
             >
