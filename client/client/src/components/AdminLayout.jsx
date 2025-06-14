@@ -22,13 +22,9 @@ const AdminLayout = () => {
                     <div className="flex items-center gap-6">
                         <span className="text-xl font-bold text-indigo-700">Stable Admin</span>
                         <IconHorse className="w-8 h-8 text-indigo-700" />
-                        <Link to="/admin" className="text-gray-700 hover:text-indigo-700 font-medium">Dashboard</Link>
                         <Link to="/admin/horses" className="text-gray-700 hover:text-indigo-700 font-medium">Horses</Link>
                         <Link to="/admin/stables" className="text-gray-700 hover:text-indigo-700 font-medium">Stables</Link>
                         <Link to="/admin/scheduleAdmin" className="text-gray-700 hover:text-indigo-700 font-medium">Schedule</Link>
-                        <Link to="/admin/staff" className="text-gray-700 hover:text-indigo-700 font-medium">Staff</Link>
-                        <Link to="/admin/expenses" className="text-gray-700 hover:text-indigo-700 font-medium">Expenses</Link>
-                        <Link to="/admin/settings" className="text-gray-700 hover:text-indigo-700 font-medium">Settings</Link>
                     </div>
                     <div>
                         <button

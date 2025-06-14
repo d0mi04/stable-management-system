@@ -44,7 +44,46 @@ const HorseForm = ({ onSubmit, initialData = initialState, editMode = false }) =
   };
 
   const handleSubmit = async (e) => {
-    // Existing submit handler code...
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    
+    const token = localStorage.getItem("token");
+    const isEdit = !!initialData._id;
+    const url = isEdit 
+      ? `${API_URL}horses/${initialData._id}` 
+      : `${API_URL}horses`;
+    
+    // Format data for API
+    const horseData = {
+      ...form,
+      birthDate: form.birthDate || new Date(new Date().setFullYear(new Date().getFullYear() - form.age))
+    };
+
+    try {
+      const res = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify(horseData)
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || 'Failed to save horse');
+      }
+
+      const data = await res.json();
+      console.log('Horse saved:', data);
+      onSubmit(data.horse); // Tell parent component we're done
+    } catch (err) {
+      console.error('Error saving horse:', err);
+      setError(err.message || 'Failed to save horse');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
