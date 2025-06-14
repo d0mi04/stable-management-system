@@ -15,6 +15,7 @@ const Login = () => {
     const user = await login(email, password);
     if (user) {
 	  localStorage.setItem("userId", user.userId); 
+	  localStorage.setItem("userName", user.username);
       if (user.role === "admin") {
         navigate("/admin", { replace: true }); // przenosi na dashboard
       } else {
