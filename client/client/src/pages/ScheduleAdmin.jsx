@@ -10,6 +10,9 @@ const Schedule = () => {
   const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState([]);
   const [newEvent, setNewEvent] = useState("");
+  const [newEventHour, setNewEventHour] = useState("09:00");
+  const [newEventLocation, setNewEventLocation] = useState("Warszawa");
+  const [newEventDuration, setNewEventDuration] = useState(1);
   const [horses, setHorses] = useState([]);
   const [selectedHorseId, setSelectedHorseId] = useState("");
   const [weatherData, setWeatherData] = useState({});
@@ -19,6 +22,15 @@ const Schedule = () => {
   const dateStr = date.toDateString();
 
   const token = localStorage.getItem("token");
+
+  // Polish cities mapping for weather API
+  const cityMapping = {
+    Krakow: "Krakow,PL",
+    Gdansk: "Gdansk,PL",
+    Warszawa: "Warsaw,PL",
+    Poznan: "Poznan,PL",
+    Wroclaw: "Wroclaw,PL",
+  };
 
   // Weather emoji mapping
   const getWeatherEmoji = (weatherMain, description) => {
@@ -57,6 +69,25 @@ const Schedule = () => {
       "NNW",
     ];
     return directions[Math.round(degrees / 22.5) % 16];
+  };
+
+  // Format duration for display
+  const formatDuration = (duration) => {
+    if (!duration) return "(1h)";
+
+    if (duration >= 12) {
+      return <span className="text-gray-500 text-xs">(All day)</span>;
+    }
+
+    if (duration < 1) {
+      return `(${Math.round(duration * 60)}min)`;
+    }
+
+    if (duration % 1 === 0) {
+      return `(${duration}h)`;
+    }
+
+    return `(${duration}h)`;
   };
 
   // Weather Tooltip Component
@@ -168,7 +199,7 @@ const Schedule = () => {
   };
 
   // Fetch weather data
-  const fetchWeatherData = async (eventDate) => {
+  const fetchWeatherData = async (eventDate, eventLocation = "Warszawa") => {
     if (
       !WEATHER_API_KEY ||
       WEATHER_API_KEY === "your_openweather_api_key_here"
@@ -186,8 +217,8 @@ const Schedule = () => {
     }
 
     try {
-      // Use a more specific location - you can change this to your stable's location
-      const location = "Warsaw,PL"; // Change this to your preferred location
+      // Use the event's location
+      const location = cityMapping[eventLocation] || "Warsaw,PL";
       const response = await fetch(
         `https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${WEATHER_API_KEY}&units=metric&cnt=40`
       );
@@ -272,7 +303,7 @@ const Schedule = () => {
 
         // Fetch weather data for each event
         const weatherPromises = eventsData.map(async (event) => {
-          const weather = await fetchWeatherData(event.date);
+          const weather = await fetchWeatherData(event.date, event.location);
           return { eventId: event._id, weather };
         });
 
@@ -299,6 +330,9 @@ const Schedule = () => {
       body: JSON.stringify({
         date: dateStr,
         title: newEvent,
+        hour: newEventHour,
+        location: newEventLocation,
+        duration: newEventDuration,
         horseId: selectedHorseId,
       }),
     });
@@ -306,10 +340,13 @@ const Schedule = () => {
     setEvents((prev) => [...prev, created]);
 
     // Fetch weather for new event
-    const weather = await fetchWeatherData(created.date);
+    const weather = await fetchWeatherData(created.date, created.location);
     setWeatherData((prev) => ({ ...prev, [created._id]: weather }));
 
     setNewEvent("");
+    setNewEventHour("09:00");
+    setNewEventLocation("Warszawa");
+    setNewEventDuration(1);
     setSelectedHorseId("");
   };
 
@@ -413,6 +450,59 @@ const Schedule = () => {
                 />
               </div>
 
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-purple-800 mb-2">
+                    Time
+                  </label>
+                  <input
+                    type="time"
+                    value={newEventHour}
+                    onChange={(e) => setNewEventHour(e.target.value)}
+                    className="w-full px-4 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-purple-900"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-purple-800 mb-2">
+                    Location
+                  </label>
+                  <select
+                    value={newEventLocation}
+                    onChange={(e) => setNewEventLocation(e.target.value)}
+                    className="w-full px-4 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-purple-900"
+                  >
+                    <option value="Warszawa">Warszawa</option>
+                    <option value="Krakow">Kraków</option>
+                    <option value="Gdansk">Gdańsk</option>
+                    <option value="Poznan">Poznań</option>
+                    <option value="Wroclaw">Wrocław</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-purple-800 mb-2">
+                    Duration (hours)
+                  </label>
+                  <select
+                    value={newEventDuration}
+                    onChange={(e) => setNewEventDuration(Number(e.target.value))}
+                    className="w-full px-4 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-purple-900"
+                  >
+                    <option value={0.5}>30 min</option>
+                    <option value={1}>1 hour</option>
+                    <option value={1.5}>1.5 hours</option>
+                    <option value={2}>2 hours</option>
+                    <option value={3}>3 hours</option>
+                    <option value={4}>4 hours</option>
+                    <option value={6}>6 hours</option>
+                    <option value={8}>8 hours</option>
+                    <option value={12}>12 hours</option>
+                    <option value={24}>All day</option>
+                  </select>
+                </div>
+              </div>
+
               <button
                 onClick={handleAddEvent}
                 disabled={!newEvent.trim() || !selectedHorseId}
@@ -449,6 +539,9 @@ const Schedule = () => {
                       Event
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-purple-900">
+                      Time & Location
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-purple-900">
                       Horse
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-purple-900">
@@ -471,6 +564,19 @@ const Schedule = () => {
                       >
                         <td className="px-6 py-4 text-purple-900">
                           <div className="font-medium">{event.title}</div>
+                        </td>
+                        <td className="px-6 py-4 text-purple-800">
+                          <div className="text-sm">
+                            <div className="font-medium flex items-center gap-2">
+                              🕐 {event.hour || "09:00"}
+                              <span className={`${event.duration >= 12 ? 'text-gray-500 text-xs' : 'text-purple-500'}`}>
+                                {formatDuration(event.duration)}
+                              </span>
+                            </div>
+                            <div className="text-purple-600">
+                              📍 {event.location || "Warszawa"}
+                            </div>
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-purple-800">
                           {event.horseId?.name || "No assignment"}
