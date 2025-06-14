@@ -195,6 +195,22 @@ const Stables = () => {
     );
   };
 
+  // hinzugefügt: mapowanie statusów na klasy Tailwind
+  const getStatusClasses = (status) => {
+    switch (status.toLowerCase()) {
+      case "occupied":
+        return "bg-red-100 border-red-500";
+      case "available":
+        return "bg-green-100 border-green-500";
+      case "maintenance":
+        return "bg-orange-100 border-orange-500";
+      case "competition":
+        return "bg-blue-100 border-blue-500";
+      default:
+        return "bg-gray-100 border-gray-300";
+    }
+  };
+
   return (
     <div className="p-4">
       {showForm && (
@@ -259,7 +275,13 @@ const Stables = () => {
         ) : (
           <ul className="space-y-2">
             {stalls.map((stall) => (
-              <li key={stall._id} className="border p-2 rounded">
+              // zmieniono: dynamiczne kolory wg statusu
+              <li
+                key={stall._id}
+                className={`border-l-4 p-2 rounded ${getStatusClasses(
+                  stall.status
+                )}`}
+              >
                 <p>
                   <strong>Name:</strong> {stall.name}
                 </p>
