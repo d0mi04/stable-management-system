@@ -103,7 +103,7 @@ Na potrzeby implementacji funkcjonalności kalendarza zostały dopisane poniższ
 **Autoryzacja:** Opcjonalna (np. JWT).
 **Przykład odpowiedzi:** Analogiczna do powyższej, ale filtrowana po ```ownerId```.
 
-### 🟢 POST /events
+### 🟡 POST /events
 **Opis:** Dodaje nowe wydarzenie dla konkretnego konia (```horseId```).  
 **Dostępność:** Admin.  
 **Autoryzacja:** JWT (`verifyToken`, `isAdmin`)
@@ -132,7 +132,7 @@ Na potrzeby implementacji funkcjonalności kalendarza zostały dopisane poniższ
 }
 ```
 
-### 🟢 DELETE /events/:id
+### 🔴 DELETE /events/:id
 **Opis:** Usuwa wydarzenie o danym ```id```.  
 **Dostępność:** Admin.  
 **Autoryzacja:** JWT (`verifyToken`, `isAdmin`)
