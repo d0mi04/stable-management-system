@@ -31,7 +31,7 @@ const AdminLayout = () => {
               <IconHorse className="w-8 h-8 text-indigo-700" />
             </a>
             <Link
-              to="/admin"
+              to="/admin/horses"
               className="flex items-center gap-2 text-gray-700 hover:text-indigo-700 font-medium"
             >
               Horses
