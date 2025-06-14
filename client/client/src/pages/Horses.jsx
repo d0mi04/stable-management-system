@@ -172,7 +172,6 @@ const HorseForm = ({ onSubmit, initialData = initialState, editMode = false, onC
 const HorseDetailsModal = ({ horseId, onClose }) => {
   const [horse, setHorse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [stallDetails, setStallDetails] = useState(null);
 
   useEffect(() => {
     const fetchHorse = async () => {
@@ -184,15 +183,6 @@ const HorseDetailsModal = ({ horseId, onClose }) => {
         });
         const { horse: fetchedHorse } = await res.json();
         setHorse(fetchedHorse);
-        
-        const sid = fetchedHorse.stallId || fetchedHorse.stall;
-        if (sid) {
-          const stallRes = await fetch(`${API_URL}stalls/${sid}`, {
-            headers: { Authorization: token ? `Bearer ${token}` : "" },
-          });
-          const { stall } = await stallRes.json();
-          setStallDetails(stall);
-        }
       } catch (e) {
         console.error(e);
         setHorse(null);
@@ -225,48 +215,24 @@ const HorseDetailsModal = ({ horseId, onClose }) => {
             <span className="ml-3 text-indigo-600">Loading...</span>
           </div>
         ) : horse ? (
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-800 mb-2">Basic Information</h3>
-                <div className="space-y-2 text-sm text-gray-600">
-                  <p><span className="font-medium">Name:</span> {horse.name}</p>
-                  <p><span className="font-medium">Owner:</span> {horse.ownerEmail || "Not assigned"}</p>
-                  <p><span className="font-medium">Breed:</span> {horse.breed}</p>
-                  <p><span className="font-medium">Age:</span> {horse.age || calculateAge(horse.birthDate)} years</p>
-                  <p><span className="font-medium">Status:</span> 
-                    <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                      horse.status === 'stall granted' ? 'bg-green-100 text-green-800' :
-                      horse.status === 'waiting for stall' ? 'bg-red-100 text-red-700' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {horse.status === 'stall granted' ? 'stall assigned' : 
-                       horse.status === 'waiting for stall' ? 'waiting for stall' : 
-                       'Unknown'}
-                    </span>
-                  </p>
-                </div>
-              </div>
-
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-800 mb-2">Stall Information</h3>
-                {stallDetails ? (
-                  <div className="space-y-2 text-sm text-gray-600">
-                    <p><span className="font-medium">Stall Name:</span> {stallDetails.name}</p>
-                    <p><span className="font-medium">Size:</span> {stallDetails.size}</p>
-                    <p><span className="font-medium">Status:</span> 
-                      <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                        stallDetails.status === 'occupied' ? 'bg-red-100 text-red-800' :
-                        stallDetails.status === 'available' ? 'bg-green-100 text-green-800' :
-                        'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {stallDetails.status}
-                      </span>
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-yellow-600 text-sm">No stall assigned</p>
-                )}
+          <div className="space-y-4">            <div className="border border-gray-200 rounded-lg p-4">
+              <h3 className="font-semibold text-gray-800 mb-2">Basic Information</h3>
+              <div className="space-y-2 text-sm text-gray-600">
+                <p><span className="font-medium">Name:</span> {horse.name}</p>
+                <p><span className="font-medium">Owner:</span> {horse.ownerEmail || "Not assigned"}</p>
+                <p><span className="font-medium">Breed:</span> {horse.breed}</p>
+                <p><span className="font-medium">Age:</span> {horse.age || calculateAge(horse.birthDate)} years</p>
+                <p><span className="font-medium">Status:</span> 
+                  <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                    horse.status === 'stall granted' ? 'bg-green-100 text-green-800' :
+                    horse.status === 'waiting for stall' ? 'bg-red-100 text-red-700' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {horse.status === 'stall granted' ? 'stall assigned' : 
+                     horse.status === 'waiting for stall' ? 'waiting for stall' : 
+                     'Unknown'}
+                  </span>
+                </p>
               </div>
             </div>
 
@@ -687,7 +653,7 @@ const Horses = () => {
           /* Horse Cards Grid */
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {horses.map((horse) => (
-              <div key={horse._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-150">
+              <div key={horse._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-150 flex flex-col h-full">
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="text-lg font-semibold text-gray-800">{horse.name}</h3>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -700,7 +666,7 @@ const Horses = () => {
                      'Unknown'}
                   </span>
                 </div>
-                <div className="space-y-2 text-sm text-gray-600">
+                <div className="space-y-2 text-sm text-gray-600 flex-grow">
                   <p><span className="font-medium">Owner:</span> {horse.ownerEmail || "Not assigned"}</p>
                   <p><span className="font-medium">Breed:</span> {horse.breed}</p>
                   <p><span className="font-medium">Age:</span> {horse.age || calculateAge(horse.birthDate)} years</p>
@@ -708,28 +674,33 @@ const Horses = () => {
                     <p><span className="font-medium">Notes:</span> {horse.notes}</p>
                   )}
                 </div>
-                <div className="flex justify-between items-center mt-4 space-x-2">
+                <div className="flex justify-center items-center mt-4 pt-3 border-t border-gray-200">
                   <button
                     onClick={() => handleDetails(horse)}
-                    className="text-indigo-600 hover:text-indigo-800 transition duration-150"
+                    className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition duration-150 p-2 rounded"
+                    title="View Details"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </button>
+                  <div className="w-px h-4 bg-gray-300 mx-2"></div>
                   <button
                     onClick={() => handleEdit(horse)}
-                    className="text-indigo-600 hover:text-indigo-800 transition duration-150"
+                    className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 transition duration-150 p-2 rounded"
+                    title="Edit Horse"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                   </button>
+                  <div className="w-px h-4 bg-gray-300 mx-2"></div>
                   {horse.stallId ? (
                     <button
                       onClick={() => handleUnassignStall(horse)}
-                      className="text-yellow-600 hover:text-yellow-800 transition duration-150"
+                      className="text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 transition duration-150 p-2 rounded"
+                      title="Unassign Stall"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
@@ -738,16 +709,19 @@ const Horses = () => {
                   ) : (
                     <button
                       onClick={() => handleAssignStall(horse)}
-                      className="text-green-600 hover:text-green-800 transition duration-150"
+                      className="text-green-600 hover:text-green-800 hover:bg-green-50 transition duration-150 p-2 rounded"
+                      title="Assign Stall"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
                       </svg>
                     </button>
                   )}
+                  <div className="w-px h-4 bg-gray-300 mx-2"></div>
                   <button
                     onClick={() => handleDeleteHorse(horse._id)}
-                    className="text-red-600 hover:text-red-800 transition duration-150"
+                    className="text-red-600 hover:text-red-800 hover:bg-red-50 transition duration-150 p-2 rounded"
+                    title="Delete Horse"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

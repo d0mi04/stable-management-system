@@ -16,29 +16,52 @@ const StatCard = ({ title, value, icon, color, subtitle }) => (
   </div>
 );
 
-const RecentActivity = ({ activities }) => (
+const MaintenanceStalls = ({ stalls }) => (
   <div className="bg-white rounded-lg shadow-md p-6">
     <h3 className="text-lg font-semibold text-gray-900 mb-4">
-      Recent Activity
+      Stalls in Maintenance
     </h3>
     <div className="space-y-3">
-      {activities.map((activity, index) => (
-        <div
-          key={index}
-          className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
-        >
-          <div className="flex-shrink-0">
-            <span className="text-lg">{activity.icon}</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900">
-              {activity.title}
-            </p>
-            <p className="text-sm text-gray-500">{activity.description}</p>
-          </div>
-          <div className="text-xs text-gray-400">{activity.time}</div>
+      {stalls.length === 0 ? (
+        <div className="text-center py-6">
+          <span className="text-4xl">🔧</span>
+          <p className="text-gray-500 mt-2">
+            No stalls currently in maintenance
+          </p>
+          <p className="text-sm text-gray-400">
+            All stalls are operational
+          </p>
         </div>
-      ))}
+      ) : (
+        stalls.slice(0, 3).map((stall, index) => (
+          <div
+            key={stall._id || index}
+            className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500"
+          >
+            <div className="flex-shrink-0">
+              <span className="text-lg">🔧</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900">
+                {stall.name}
+              </p>
+              <p className="text-sm text-gray-500">
+                📍 {stall.stableId?.fullName || "Unknown Stable"} • 📏 {stall.size}
+              </p>
+            </div>
+            <div className="text-xs text-gray-400 text-right">
+              <div className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
+                Maintenance
+              </div>
+            </div>
+          </div>
+        ))
+      )}
+      {stalls.length > 3 && (
+        <p className="text-xs text-gray-500 text-center mt-2">
+          And {stalls.length - 3} more stalls in maintenance
+        </p>
+      )}
     </div>
   </div>
 );
@@ -147,7 +170,7 @@ const Dashboard = () => {
     events: { total: 0, upcoming: 0 },
   });
   const [loading, setLoading] = useState(true);
-  const [recentActivities, setRecentActivities] = useState([]);
+  const [maintenanceStalls, setMaintenanceStalls] = useState([]);
   const [upcomingEventsData, setUpcomingEventsData] = useState([]);
 
   useEffect(() => {
@@ -198,7 +221,7 @@ const Dashboard = () => {
         const waitingHorses = horses.filter(
           (h) => h.status === "waiting for stall"
         ).length;
-        const assignedHorses = horses.filter((h) => h.stallId).length;
+        const assignedHorses = horses.length - waitingHorses; // Calculate as total - waiting
 
         // Process stalls data
         const stallsData = stallsRes.ok
@@ -211,9 +234,13 @@ const Dashboard = () => {
         const occupiedStalls = stalls.filter(
           (s) => s.status === "occupied"
         ).length;
-        const maintenanceStalls = stalls.filter(
+        const maintenanceStallsData = stalls.filter(
           (s) => s.status === "maintenance"
-        ).length;
+        );
+        const maintenanceStalls = maintenanceStallsData.length;
+
+        // Store maintenance stalls for the component
+        setMaintenanceStalls(maintenanceStallsData);
 
         // Process staff data
         const staffData = staffRes.ok ? await staffRes.json() : { staff: [] };
@@ -275,43 +302,6 @@ const Dashboard = () => {
           },
         });
 
-        // Generate recent activities
-        const activities = [];
-
-        // Add recent horses
-        horses.slice(-3).forEach((horse) => {
-          activities.push({
-            icon: "🐴",
-            title: `New horse added: ${horse.name}`,
-            description: `Breed: ${horse.breed || "Unknown"}`,
-            time: "Today",
-          });
-        });
-
-        // Add stall activities
-        if (waitingHorses > 0) {
-          activities.push({
-            icon: "⏳",
-            title: `${waitingHorses} horses waiting for stall`,
-            description: "Assign stalls to improve efficiency",
-            time: "Ongoing",
-          });
-        }
-
-        // Add expense alerts
-        if (unpaidExpenses.length > 0) {
-          activities.push({
-            icon: "💰",
-            title: `${unpaidExpenses.length} unpaid expenses`,
-            description: `Total: $${unpaidExpenses.reduce(
-              (sum, e) => sum + (e.amount || 0),
-              0
-            )}`,
-            time: "Pending",
-          });
-        }
-
-        setRecentActivities(activities.slice(0, 3));
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       }
@@ -461,46 +451,11 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Recent Activity and Upcoming Events */}
+      {/* Maintenance Stalls and Upcoming Events */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RecentActivity activities={recentActivities} />
+        <MaintenanceStalls stalls={maintenanceStalls} />
         <UpcomingEvents events={upcomingEventsData} />
       </div>
-
-      {/* Action Items */}
-      {(dashboardData.horses.waiting > 0 ||
-        dashboardData.expenses.unpaidTotal > 0) && (
-        <div className="mt-8">
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <span className="text-yellow-400 text-xl">⚠️</span>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">
-                  Action Required
-                </h3>
-                <div className="mt-2 text-sm text-yellow-700">
-                  <ul className="list-disc pl-5 space-y-1">
-                    {dashboardData.horses.waiting > 0 && (
-                      <li>
-                        {dashboardData.horses.waiting} horses are waiting for
-                        stall assignment
-                      </li>
-                    )}
-                    {dashboardData.expenses.unpaidTotal > 0 && (
-                      <li>
-                        ${dashboardData.expenses.unpaidTotal.toLocaleString()}{" "}
-                        in unpaid expenses need attention
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
