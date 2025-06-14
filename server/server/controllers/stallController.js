@@ -3,7 +3,7 @@ const Stall = require('../models/Stall');
 // GET /stalls
 exports.getAllStalls = async (req, res) => {
     try {
-        const stalls = await Stall.find();
+        const stalls = await Stall.find().populate('stableId');
         res.status(200).json({
             stalls
         });
@@ -20,7 +20,7 @@ exports.getAllStalls = async (req, res) => {
 exports.getStallById = async (req, res) => {
     try {
         const stallId = req.params.stallID;
-        const stall = await Stall.findById(stallId);
+        const stall = await Stall.findById(stallId).populate('stableId');
 
         if(!stall) {
             return res.status(404).json({
@@ -32,7 +32,7 @@ exports.getStallById = async (req, res) => {
             stall
         });
     } catch (err) {
-        res.status(200).json({
+        res.status(500).json({
             message: '🍎 Internal error',
             error: err.message
         });
