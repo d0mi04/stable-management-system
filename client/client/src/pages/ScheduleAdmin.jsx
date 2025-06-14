@@ -499,6 +499,26 @@ const Schedule = () => {
     setNewEventDuration(1);
     setNewEventLocation("Warszawa");
     setSelectedHorseId("");
+	
+    // Szukanie konia i właściciela
+    const selectedHorse = horses.find(h => h._id === selectedHorseId);
+    const email = selectedHorse?.ownerEmail;
+    const horseName = selectedHorse?.name;
+
+    // Formatowanie daty jako DD-MM-YYYY
+    const d = new Date(date);
+    const formattedDate = `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+
+    // Wysłanie requesta do email API
+    if (email && horseName) {
+      const emailUrl = `https://send-email-381376669818.europe-west1.run.app?email=${encodeURIComponent(email)}&horseName=${encodeURIComponent(horseName)}&date=${encodeURIComponent(formattedDate)}&event=${encodeURIComponent(newEvent)}`;
+
+      try {
+        await fetch(emailUrl);
+      } catch (err) {
+        console.error("Błąd podczas wysyłania e-maila:", err);
+      }
+    }
   };
 
   const handleRemoveEvent = async (id) => {
