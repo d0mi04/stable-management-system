@@ -149,12 +149,6 @@ const Stables = () => {
     const method = stallID ? "PUT" : "POST";
     const url = stallID ? `${API_URL}stalls/${stallID}` : `${API_URL}stalls`;
 
-    const apiPayload = {
-      ...stallFormData,
-      stable: stallFormData.stableId,
-    };
-    delete apiPayload.stableId;
-
     try {
       const res = await fetch(url, {
         method: method,
@@ -162,7 +156,7 @@ const Stables = () => {
           "Content-Type": "application/json",
           Authorization: token ? `Bearer ${token}` : "",
         },
-        body: JSON.stringify(apiPayload),
+        body: JSON.stringify(stallFormData),
       });
 
       if (!res.ok) {
@@ -302,7 +296,7 @@ const Stables = () => {
     const [form, setForm] = useState(() => {
       if (initialData) {
         return {
-          stableId: initialData.stable?._id || "",
+          stableId: initialData.stableId?._id || "",
           name: initialData.name || "",
           size: initialData.size || "medium",
           status: initialData.status || "available",
@@ -772,7 +766,7 @@ const Stables = () => {
                     </div>
                   </div>
                   <div className="space-y-2 text-sm text-gray-600">
-                    <p><span className="font-medium">Stable:</span> {stall.stable?.fullName || "Unknown"}</p> {/* Use fullName here too */}
+                    <p><span className="font-medium">Stable:</span> {stall.stableId?.fullName || "Unknown"}</p> {/* Use stableId for proper reference */}
                     <p><span className="font-medium">Size:</span> {stall.size}</p>
                     <p>
                       <span className="font-medium">Status:</span>
