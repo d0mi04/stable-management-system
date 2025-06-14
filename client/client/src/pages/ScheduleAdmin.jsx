@@ -12,6 +12,7 @@ const Schedule = () => {
   const [newEvent, setNewEvent] = useState("");
   const [newEventHour, setNewEventHour] = useState("09:00");
   const [newEventLocation, setNewEventLocation] = useState("Warszawa");
+  const [newEventDuration, setNewEventDuration] = useState(1);
   const [horses, setHorses] = useState([]);
   const [selectedHorseId, setSelectedHorseId] = useState("");
   const [weatherData, setWeatherData] = useState({});
@@ -68,6 +69,25 @@ const Schedule = () => {
       "NNW",
     ];
     return directions[Math.round(degrees / 22.5) % 16];
+  };
+
+  // Format duration for display
+  const formatDuration = (duration) => {
+    if (!duration) return "(1h)";
+
+    if (duration >= 12) {
+      return <span className="text-gray-500 text-xs">(All day)</span>;
+    }
+
+    if (duration < 1) {
+      return `(${Math.round(duration * 60)}min)`;
+    }
+
+    if (duration % 1 === 0) {
+      return `(${duration}h)`;
+    }
+
+    return `(${duration}h)`;
   };
 
   // Weather Tooltip Component
@@ -312,6 +332,7 @@ const Schedule = () => {
         title: newEvent,
         hour: newEventHour,
         location: newEventLocation,
+        duration: newEventDuration,
         horseId: selectedHorseId,
       }),
     });
@@ -325,7 +346,28 @@ const Schedule = () => {
     setNewEvent("");
     setNewEventHour("09:00");
     setNewEventLocation("Warszawa");
+    setNewEventDuration(1);
     setSelectedHorseId("");
+	
+    // Szukanie konia i właściciela
+    const selectedHorse = horses.find(h => h._id === selectedHorseId);
+    const email = selectedHorse?.ownerEmail;
+    const horseName = selectedHorse?.name;
+
+    // Formatowanie daty jako DD-MM-YYYY
+    const d = new Date(date);
+    const formattedDate = `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+
+    // Wysłanie requesta do email API
+    if (email && horseName) {
+      const emailUrl = `https://send-email-381376669818.europe-west1.run.app?email=${encodeURIComponent(email)}&horseName=${encodeURIComponent(horseName)}&date=${encodeURIComponent(formattedDate)}&event=${encodeURIComponent(newEvent)}`;
+
+      try {
+        await fetch(emailUrl);
+      } catch (err) {
+        console.error("Błąd podczas wysyłania e-maila:", err);
+      }
+    }
   };
 
   const handleRemoveEvent = async (id) => {
@@ -428,7 +470,7 @@ const Schedule = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-purple-800 mb-2">
                     Time
@@ -455,6 +497,28 @@ const Schedule = () => {
                     <option value="Gdansk">Gdańsk</option>
                     <option value="Poznan">Poznań</option>
                     <option value="Wroclaw">Wrocław</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-purple-800 mb-2">
+                    Duration (hours)
+                  </label>
+                  <select
+                    value={newEventDuration}
+                    onChange={(e) => setNewEventDuration(Number(e.target.value))}
+                    className="w-full px-4 py-3 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-purple-900"
+                  >
+                    <option value={0.5}>30 min</option>
+                    <option value={1}>1 hour</option>
+                    <option value={1.5}>1.5 hours</option>
+                    <option value={2}>2 hours</option>
+                    <option value={3}>3 hours</option>
+                    <option value={4}>4 hours</option>
+                    <option value={6}>6 hours</option>
+                    <option value={8}>8 hours</option>
+                    <option value={12}>12 hours</option>
+                    <option value={24}>All day</option>
                   </select>
                 </div>
               </div>
@@ -523,8 +587,11 @@ const Schedule = () => {
                         </td>
                         <td className="px-6 py-4 text-purple-800">
                           <div className="text-sm">
-                            <div className="font-medium">
+                            <div className="font-medium flex items-center gap-2">
                               🕐 {event.hour || "09:00"}
+                              <span className={`${event.duration >= 12 ? 'text-gray-500 text-xs' : 'text-purple-500'}`}>
+                                {formatDuration(event.duration)}
+                              </span>
                             </div>
                             <div className="text-purple-600">
                               📍 {event.location || "Warszawa"}
