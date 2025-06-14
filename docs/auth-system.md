@@ -20,7 +20,7 @@
 }
 ```
 
-✅ Wskazówka: po udanej rejestracji możesz automatycznie zalogować użytkownika lub przekierować go do formularza logowania.
+✅ Wskazówka: po udanej rejestracji można automatycznie zalogować użytkownika lub przekierować go do formularza logowania.
 
 ## 🟢 POST /auth/login
 
@@ -44,7 +44,7 @@
 }
 ```
 
-✅ Wskazówka: zapisz token w `localStorage` lub `sessionStorage` i dodawaj do nagłówka `Authorization` w dalszych requestach jako: 
+✅ Wskazówka: Należy zapisać token w `localStorage` lub `sessionStorage` i dodawać do nagłówka `Authorization` w dalszych requestach jako: 
 ```
 Authorization: Bearer JWT_TOKEN
 ```

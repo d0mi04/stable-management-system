@@ -148,7 +148,7 @@
 
  - **Opis:** Usuwa konia z bazy. 
  - **Dostępność:** Wymaga tokenu JWT.
-- **Szczegóły:** 
+ - **Szczegóły:** 
 
    - endpoint blokuje nieautoryzowane użycie tego endpointu. Możliwość usunięcia konia jest wtedy, gdy `userId` wyciągnięte z tokena jest równe wartości pola `horse.owner`. `admin` może usunąć dowolnego konia.
    - sprawdza, czy do konia był przypisany boks. W momencie usuwania konia - zwalnia się jego boks. Status boksu zmienia się na `status: available` i usuwana jest wartość `horseId: null`.
