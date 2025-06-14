@@ -28,9 +28,7 @@ const MaintenanceStalls = ({ stalls }) => (
           <p className="text-gray-500 mt-2">
             No stalls currently in maintenance
           </p>
-          <p className="text-sm text-gray-400">
-            All stalls are operational
-          </p>
+          <p className="text-sm text-gray-400">All stalls are operational</p>
         </div>
       ) : (
         stalls.slice(0, 3).map((stall, index) => (
@@ -42,11 +40,10 @@ const MaintenanceStalls = ({ stalls }) => (
               <span className="text-lg">🔧</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900">
-                {stall.name}
-              </p>
+              <p className="text-sm font-medium text-gray-900">{stall.name}</p>
               <p className="text-sm text-gray-500">
-                📍 {stall.stableId?.fullName || "Unknown Stable"} • 📏 {stall.size}
+                📍 {stall.stableId?.fullName || "Unknown Stable"} • 📏{" "}
+                {stall.size}
               </p>
             </div>
             <div className="text-xs text-gray-400 text-right">
@@ -301,7 +298,6 @@ const Dashboard = () => {
             upcoming: upcomingEvents,
           },
         });
-
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       }

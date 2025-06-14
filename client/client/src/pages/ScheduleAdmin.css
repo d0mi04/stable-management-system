@@ -68,8 +68,14 @@
 }
 
 .react-calendar__tile--now {
-  background: #6b46c1;
-  color: white;
+  background: #7c3aed !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.react-calendar__tile--now:hover {
+  background: #6b21a8 !important;
+  color: white !important;
 }
 
 .react-calendar__tile--hasActive {
@@ -83,4 +89,42 @@
 
 .react-calendar__month-view__days__day--weekend {
   color: #9333ea;
+}
+
+/* Event indicator styling */
+.react-calendar__tile {
+  position: relative;
+}
+
+.react-calendar__tile--hasEvent {
+  position: relative;
+}
+
+/* Ensure event indicators are visible on all tile states */
+.react-calendar__tile--active .event-indicator,
+.react-calendar__tile--now .event-indicator {
+  background: white !important;
+}
+
+/* Gray indicators for days without events should remain visible */
+.react-calendar__tile--active .w-2.h-2.bg-gray-300,
+.react-calendar__tile--now .w-2.h-2.bg-gray-300 {
+  background: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Purple indicators should be white on selected/current days */
+.react-calendar__tile--active .w-2.h-2.bg-purple-600,
+.react-calendar__tile--now .w-2.h-2.bg-purple-600 {
+  background: white !important;
+}
+
+/* Improve tile hover effects */
+.react-calendar__month-view__days__day:hover:not(.react-calendar__tile--active):not(.react-calendar__tile--now) {
+  background: #f3f4f6;
+  transform: scale(1.05);
+}
+
+/* Selected date styling */
+.react-calendar__tile--active:hover {
+  background: #2c0e8c !important;
 }

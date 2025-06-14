@@ -10,6 +10,7 @@ const Schedule = () => {
   const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState([]);
   const [allEvents, setAllEvents] = useState([]); // Store all events for filtering
+  const [monthEvents, setMonthEvents] = useState([]); // Store all events for the current month
   const [newEvent, setNewEvent] = useState("");
   const [newEventHour, setNewEventHour] = useState("09:00");
   const [newEventDuration, setNewEventDuration] = useState(1);
@@ -372,6 +373,36 @@ const Schedule = () => {
     }
   };
 
+  // Function to fetch all events for the current month for calendar indicators
+  const fetchMonthEvents = async (currentDate) => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    // Get first and last day of the month
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    
+    const eventsForMonth = [];
+    
+    // Iterate through all days in the month
+    for (let day = new Date(firstDay); day <= lastDay; day.setDate(day.getDate() + 1)) {
+      try {
+        const dayStr = day.toDateString();
+        const res = await fetch(`${API_URL}events/${dayStr}`, {
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        });
+        if (res.ok) {
+          const dayEvents = await res.json();
+          eventsForMonth.push(...dayEvents);
+        }
+      } catch (error) {
+        console.error(`Error fetching events for ${day.toDateString()}:`, error);
+      }
+    }
+    
+    setMonthEvents(eventsForMonth);
+  };
+
   // Filter events by location and horse
   const filterEvents = (eventsData) => {
     let filtered = eventsData;
@@ -421,6 +452,13 @@ const Schedule = () => {
         setHorses([]);
       });
   }, [token]);
+
+  // Fetch month events when calendar month changes
+  useEffect(() => {
+    if (token) {
+      fetchMonthEvents(date);
+    }
+  }, [date.getMonth(), date.getFullYear(), token]);
 
   useEffect(() => {
     setLoading(true);
@@ -535,6 +573,32 @@ const Schedule = () => {
     });
   };
 
+  // Function to get events for a specific date
+  const getEventsForDate = (date) => {
+    const dateStr = date.toDateString();
+    return monthEvents.filter(event => {
+      const eventDate = new Date(event.date);
+      return eventDate.toDateString() === dateStr;
+    });
+  };
+
+  // Custom tile content for calendar to show event indicators
+  const tileContent = ({ date, view }) => {
+    if (view === 'month') {
+      const eventsOnDate = getEventsForDate(date);
+      return (
+        <div className="flex justify-center mt-1">
+          {eventsOnDate.length > 0 ? (
+            <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></div>
+          ) : (
+            <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="min-h-screen bg-transparent p-6">
       <div className="max-w-6xl mx-auto">
@@ -563,6 +627,7 @@ const Schedule = () => {
               value={date}
               className="w-full"
               locale="en-US"
+              tileContent={tileContent}
               navigationLabel={({ date, view, label }) => {
                 return view === "month"
                   ? date.toLocaleDateString("en-US", {
