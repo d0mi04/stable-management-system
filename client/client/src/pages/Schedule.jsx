@@ -12,7 +12,6 @@ const GoogleCalendar = () => {
   const [currentDate, setCurrentDate] = useState(dayjs());
   const [token, setToken] = useState(null);
   
-  //const ownerId = '684616f071c979941133fe47';
   const ownerId = localStorage.getItem("userId");
 
   const [newEvent, setNewEvent] = useState({
