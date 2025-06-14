@@ -1,5 +1,7 @@
 const Stable = require('../models/Stable');
 const Stall = require('../models/Stall');
+const Horses = require('../models/Horse');
+const Horse = require('../models/Horse');
 
 // GET /stables
 exports.getAllStables = async (req, res) => {
@@ -114,7 +116,7 @@ exports.updateStable = async (req, res) => {
 exports.deleteStable = async (req, res) => {
     try {
         const stableId = req.params.stableID;
-        const deletedStable = await Stable.findByIdAndDelete(stableId);
+        const deletedStable = await Stable.findById(stableId);
 
         if(!deletedStable) {
             return res.status(404).json({
@@ -122,6 +124,35 @@ exports.deleteStable = async (req, res) => {
             });
         }
 
+        const stalls = await Stall.find({ stableId });
+        console.log(`Stalls found: ${stalls.length}`);
+
+        const hasOccupiedStalls = stalls.some(stall => 
+            stall.status.toLocaleLowerCase() !== 'available'
+        );
+
+        if(hasOccupiedStalls) {
+            console.log(`Stable has ${hasOccupiedStalls.length} occupied stalls - horses will have status set to waiting for stall`);
+        }
+
+        for(const stall of stalls) {
+            if(stall.horseId) {
+                await Horse.findByIdAndUpdate(
+                    stall.horseId,
+                    {
+                        $set: {
+                            stallId: null,
+                            status: 'waiting for stall'
+                        }
+                    }
+                );
+            }
+        }
+
+        // usuwamy teraz wszystkie boksy ze stajni:
+        await Stall.deleteMany({ stableId });
+
+        // stajnie też usuwamy XD
         await deletedStable.deleteOne();
 
         res.status(200).json({
