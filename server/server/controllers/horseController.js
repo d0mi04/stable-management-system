@@ -5,7 +5,7 @@ const User = require('../models/User');
 // GET /horses
 exports.getAllHorses = async (req, res) => {
     try {
-        const horses = await Horse.find().select('name birthDate breed notes ownerEmail')  // filtowanie, żeby nie było widać wrażliwych danych
+        const horses = await Horse.find().select('name birthDate breed notes ownerEmail status')  // filtowanie, żeby nie było widać wrażliwych danych
         res.status(200).json({
             horses
         });

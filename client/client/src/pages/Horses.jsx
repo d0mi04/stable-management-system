@@ -21,20 +21,18 @@ const calculateAge = (birthDate) => {
   return age;
 };
 
-const HorseForm = ({ onSubmit, initialData = initialState, editMode = false }) => {
+const HorseForm = ({ onSubmit, initialData = initialState, editMode = false, onCancel }) => {
   const [form, setForm] = useState(initialData);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (initialData && initialData.birthDate && !initialData.age) {
-      // If we have birthDate but no age, calculate it
       setForm({
         ...initialData,
         age: calculateAge(initialData.birthDate)
       });
     } else {
-      // Otherwise use the data as is
       setForm(initialData);
     }
   }, [initialData]);
@@ -54,7 +52,6 @@ const HorseForm = ({ onSubmit, initialData = initialState, editMode = false }) =
       ? `${API_URL}horses/${initialData._id}` 
       : `${API_URL}horses`;
     
-    // Format data for API
     const horseData = {
       ...form,
       birthDate: form.birthDate || new Date(new Date().setFullYear(new Date().getFullYear() - form.age))
@@ -76,10 +73,8 @@ const HorseForm = ({ onSubmit, initialData = initialState, editMode = false }) =
       }
 
       const data = await res.json();
-      console.log('Horse saved:', data);
-      onSubmit(data.horse); // Tell parent component we're done
+      onSubmit(data.horse);
     } catch (err) {
-      console.error('Error saving horse:', err);
       setError(err.message || 'Failed to save horse');
     } finally {
       setLoading(false);
@@ -87,76 +82,94 @@ const HorseForm = ({ onSubmit, initialData = initialState, editMode = false }) =
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white shadow-xl rounded-lg px-8 pt-6 pb-8 mb-8 border border-gray-200 max-w-xl mx-auto"
-    >
-      <h3 className="text-xl font-semibold mb-6 text-indigo-700">
-        {editMode ? "Edit Horse" : "Add New Horse"}
-      </h3>
-      {error && <div className="mb-4 text-red-600">{error}</div>}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            placeholder="Horse name"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Breed</label>
-          <input
-            type="text"
-            name="breed"
-            value={form.breed}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            placeholder="Breed"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Age</label>
-          <input
-            type="number"
-            name="age"
-            value={form.age}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            placeholder="Age"
-            min="0"
-            required
-          />
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-gray-700 font-medium mb-2">Notes</label>
-          <input
-            type="text"
-            name="notes"
-            value={form.notes || ""}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            placeholder="Notes"
-          />
-        </div>
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <h3 className="text-xl font-semibold mb-4 text-center text-indigo-700">
+            {editMode ? "Edit Horse" : "Create New Horse"}
+          </h3>
+
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded text-red-700">
+              {error}
+          </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Horse Name</label>
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              placeholder="Enter horse name"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Breed</label>
+            <input
+              type="text"
+              name="breed"
+              value={form.breed}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              placeholder="Enter breed"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Age</label>
+            <input
+              type="number"
+              name="age"
+              value={form.age}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              placeholder="Age in years"
+              min="0"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Notes</label>
+            <input
+              type="text"
+              name="notes"
+              value={form.notes || ""}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              placeholder="Additional notes"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 mt-6">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-md transition duration-150"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md transition duration-150 disabled:opacity-50"
+            >
+              {loading ? (editMode ? "Saving..." : "Adding...") : editMode ? "Save Changes" : "Create Horse"}
+            </button>
+          </div>
+        </form>
       </div>
-      <button
-        type="submit"
-        className="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded transition duration-200"
-        disabled={loading}
-      >
-        {loading ? (editMode ? "Saving..." : "Adding...") : editMode ? "Save Changes" : "Add Horse"}
-      </button>
-    </form>
+    </div>
   );
 };
 
-const HorseDetailsModal = ({ horseId, onClose, waitingMode }) => {
+const HorseDetailsModal = ({ horseId, onClose }) => {
   const [horse, setHorse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [stallDetails, setStallDetails] = useState(null);
@@ -172,7 +185,6 @@ const HorseDetailsModal = ({ horseId, onClose, waitingMode }) => {
         const { horse: fetchedHorse } = await res.json();
         setHorse(fetchedHorse);
         
-        // grab whichever field your API put it in:
         const sid = fetchedHorse.stallId || fetchedHorse.stall;
         if (sid) {
           const stallRes = await fetch(`${API_URL}stalls/${sid}`, {
@@ -193,53 +205,220 @@ const HorseDetailsModal = ({ horseId, onClose, waitingMode }) => {
   if (!horseId) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full relative">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold"
-          aria-label="Close"
-        >
-          ×
-        </button>
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full mx-4">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-indigo-700">
+            Horse Details
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-xl font-bold"
+          >
+            ×
+          </button>
+        </div>
+
         {loading ? (
-          <div>Loading...</div>
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <span className="ml-3 text-indigo-600">Loading...</span>
+          </div>
         ) : horse ? (
-          <>
-            <h2 className="text-2xl font-bold mb-4 text-indigo-700">{horse.name}</h2>
-            <p>
-              <span className="font-semibold">Owner:</span> {horse.ownerEmail || "-"}
-            </p>
-            <p>
-              <span className="font-semibold">Breed:</span> {horse.breed}
-            </p>
-            <p>
-              <span className="font-semibold">Age:</span> {horse.age || calculateAge(horse.birthDate)}
-            </p>
-            <p>
-              <span className="font-semibold">Status:</span> {horse.status || "-"}
-            </p>
-            {waitingMode && (
-              stallDetails ? (
-                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2 text-indigo-600">Assigned Stall</h3>
-                  <p><span className="font-semibold">Stall Name:</span> {stallDetails.name}</p>
-                  <p><span className="font-semibold">Size:</span> {stallDetails.size}</p>
-                  <p><span className="font-semibold">Status:</span> {stallDetails.status}</p>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-800 mb-2">Basic Information</h3>
+                <div className="space-y-2 text-sm text-gray-600">
+                  <p><span className="font-medium">Name:</span> {horse.name}</p>
+                  <p><span className="font-medium">Owner:</span> {horse.ownerEmail || "Not assigned"}</p>
+                  <p><span className="font-medium">Breed:</span> {horse.breed}</p>
+                  <p><span className="font-medium">Age:</span> {horse.age || calculateAge(horse.birthDate)} years</p>
+                  <p><span className="font-medium">Status:</span> 
+                    <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                      horse.status === 'stall granted' ? 'bg-green-100 text-green-800' :
+                      horse.status === 'waiting for stall' ? 'bg-red-100 text-red-700' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {horse.status === 'stall granted' ? 'stall assigned' : 
+                       horse.status === 'waiting for stall' ? 'waiting for stall' : 
+                       'Unknown'}
+                    </span>
+                  </p>
                 </div>
-              ) : (
-                <p className="mt-2 text-amber-600">
-                  <span className="font-semibold">Stall:</span> No stall assigned
-                </p>
-              )
+              </div>
+
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-800 mb-2">Stall Information</h3>
+                {stallDetails ? (
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p><span className="font-medium">Stall Name:</span> {stallDetails.name}</p>
+                    <p><span className="font-medium">Size:</span> {stallDetails.size}</p>
+                    <p><span className="font-medium">Status:</span> 
+                      <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                        stallDetails.status === 'occupied' ? 'bg-red-100 text-red-800' :
+                        stallDetails.status === 'available' ? 'bg-green-100 text-green-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {stallDetails.status}
+                      </span>
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-yellow-600 text-sm">No stall assigned</p>
+                )}
+              </div>
+            </div>
+
+            {horse.notes && (
+              <div className="border border-gray-200 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-800 mb-2">Notes</h3>
+                <p className="text-sm text-gray-600">{horse.notes}</p>
+              </div>
             )}
-            <p className="mt-2">
-              <span className="font-semibold">Notes:</span> {horse.notes || "-"}
-            </p>
-          </>
+          </div>
         ) : (
-          <div className="text-red-600">Failed to load horse details.</div>
+          <div className="text-red-600 text-center py-8">Failed to load horse details.</div>
         )}
+      </div>
+    </div>
+  );
+};
+
+const AssignStallModal = ({ horse, availableStalls, selectedStall, onChange, onConfirm, onCancel, onUnassign }) => {
+  const [selectedStable, setSelectedStable] = useState("");
+  
+  // Group stalls by stable
+  const stallsByStable = React.useMemo(() => {
+    if (!availableStalls || availableStalls.length === 0) return {};
+    
+    // Filter out stalls with invalid stable references first
+    const validStalls = availableStalls.filter(stall => {
+      if (!stall.stableId || !stall.stableId._id || !stall.stableId.fullName) {
+        console.warn(`Filtering out stall ${stall.name} due to invalid stable reference:`, stall.stableId);
+        return false;
+      }
+      return true;
+    });
+    
+    return validStalls.reduce((acc, stall) => {
+      const stableName = stall.stableId.fullName;
+      const stableId = stall.stableId._id;
+      
+      if (!acc[stableId]) {
+        acc[stableId] = {
+          name: stableName,
+          location: stall.stableId?.location,
+          stalls: []
+        };
+      }
+      acc[stableId].stalls.push(stall);
+      return acc;
+    }, {});
+  }, [availableStalls]);
+
+  const filteredStalls = React.useMemo(() => {
+    if (!selectedStable || selectedStable === "") {
+      // Return only valid stalls (those with proper stable references)
+      return availableStalls?.filter(stall => 
+        stall.stableId && stall.stableId._id && stall.stableId.fullName
+      ) || [];
+    }
+    return stallsByStable[selectedStable]?.stalls || [];
+  }, [selectedStable, stallsByStable, availableStalls]);
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4">
+        <h3 className="text-xl font-semibold text-indigo-700 mb-6">
+          Assign Stall to {horse.name}
+        </h3>
+        
+        {horse.stallId ? (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+            <p className="text-yellow-800 font-semibold mb-2">Already Assigned</p>
+            <p className="text-yellow-700 text-sm">This horse already has a stall assigned. You must unassign the current stall before assigning a new one.</p>
+          </div>
+        ) : (
+          <p className="mb-6 text-gray-600">Select an available stall to assign to this horse.</p>
+        )}
+        
+        {/* Stable Filter */}
+        {Object.keys(stallsByStable).length > 1 && (
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Stable</label>
+            <select
+              value={selectedStable}
+              onChange={(e) => {
+                setSelectedStable(e.target.value);
+                onChange({ target: { value: "" } }); // Reset stall selection when stable changes
+              }}
+              disabled={!!horse.stallId}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:bg-gray-100"
+            >
+              <option value="">All Stables</option>
+              {Object.entries(stallsByStable).map(([stableId, stable]) => (
+                <option key={stableId} value={stableId}>
+                  {stable.name} ({stable.stalls.length} available)
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Available Stalls</label>
+          <select
+            value={selectedStall}
+            onChange={onChange}
+            disabled={!!horse.stallId}
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:bg-gray-100"
+          >
+            <option value="">Select a stall</option>
+            {filteredStalls && filteredStalls.length > 0 ? (
+              filteredStalls.map(stall => (
+                <option key={stall._id} value={stall._id}>
+                  {stall.name} ({stall.size}) - {stall.stableId?.fullName || 'Unknown Stable'}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>
+                {selectedStable ? "No available stalls in selected stable" : "No available stalls found"}
+              </option>
+            )}
+          </select>
+          <p className="mt-2 text-xs text-gray-500">
+            {selectedStable 
+              ? `Available in ${stallsByStable[selectedStable]?.name}: ${filteredStalls.length}`
+              : `Total available stalls: ${availableStalls ? availableStalls.length : 0}`
+            }
+          </p>
+        </div>
+        
+        <div className="flex justify-end space-x-3">
+          <button 
+            onClick={onCancel} 
+            className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold rounded-md transition duration-150"
+          >
+            Cancel
+          </button>
+          {!horse.stallId && (
+            <button 
+              onClick={onConfirm} 
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition duration-150"
+            >
+              Confirm Assignment
+            </button>
+          )}
+          {horse.stallId && (
+            <button 
+              onClick={onUnassign} 
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md transition duration-150"
+            >
+              Unassign Current Stall
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -251,7 +430,7 @@ const Horses = () => {
   const [loading, setLoading] = useState(true);
   const [detailsHorseId, setDetailsHorseId] = useState(null);
   const [editHorse, setEditHorse] = useState(null);
-  const [waitingMode, setWaitingMode] = useState(false);
+
   const [assigningHorse, setAssigningHorse] = useState(null);
   const [availableStalls, setAvailableStalls] = useState([]);
   const [selectedStall, setSelectedStall] = useState("");
@@ -260,8 +439,7 @@ const Horses = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const endpoint = waitingMode ? "horses/waiting" : "horses";
-      const res = await fetch(`${API_URL}${endpoint}`, {
+      const res = await fetch(`${API_URL}horses`, {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
         },
@@ -276,8 +454,7 @@ const Horses = () => {
 
   useEffect(() => {
     fetchHorses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showForm, editHorse, waitingMode]);
+  }, [showForm, editHorse]);
 
   const handleEdit = async (horse) => {
     try {
@@ -306,7 +483,7 @@ const Horses = () => {
 
   const handleAssignStall = async (horse) => {
     setAssigningHorse(horse);
-    setAvailableStalls([]); // Reset available stalls
+    setAvailableStalls([]);
     const token = localStorage.getItem("token");
     
     try {
@@ -322,9 +499,6 @@ const Horses = () => {
       }
       
       const data = await res.json();
-      console.log("Stalls API response:", data); // Debug the response
-      
-      // Extract stalls from response
       let allStalls = [];
       if (data.stalls && Array.isArray(data.stalls)) {
         allStalls = data.stalls;
@@ -332,38 +506,18 @@ const Horses = () => {
         allStalls = data;
       }
       
-      console.log("Extracted stalls:", allStalls);
-      
       if (allStalls.length === 0) {
-        console.log("No stalls returned from API");
         alert("No stalls available in the system.");
         return;
       }
       
-      // Filter stalls and log the results
       const availableStallsData = allStalls.filter(stall => stall.status === "available");
-      console.log("Available stalls:", availableStallsData);
       
       if (availableStallsData.length === 0) {
         alert("No available stalls found. All stalls are currently occupied.");
       }
       
-      // Set state with available stalls
       setAvailableStalls(availableStallsData);
-      console.log("State updated with:", availableStallsData);
-      
-      // If this horse already has a stall, fetch its details
-      if (horse.stallId) {
-        const stallRes = await fetch(`${API_URL}stalls/${horse.stallId}`, {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        });
-        if (stallRes.ok) {
-          const stallData = await stallRes.json();
-          console.log("Current stall:", stallData.stall);
-        }
-      }
     } catch (err) {
       console.error("Error fetching stalls:", err);
       alert("Failed to fetch stalls: " + (err.message || "Unknown error"));
@@ -481,166 +635,151 @@ const Horses = () => {
     }
   };
 
-  const AssignStallModal = ({ horse, availableStalls, selectedStall, onChange, onConfirm, onCancel, onUnassign }) => {
-    console.log("Modal rendering with stalls:", availableStalls); // Debug log
-    
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg w-96">
-          <h3 className="text-xl font-semibold mb-4">Assign Stall to {horse.name}</h3>
-          
-          {horse.stallId ? (
-            <div className="mb-4 p-3 bg-yellow-50 rounded border border-yellow-200">
-              <p className="text-amber-600 font-semibold">This horse already has a stall assigned.</p>
-              <p>You must unassign the current stall before assigning a new one.</p>
-            </div>
-          ) : (
-            <p className="mb-4 text-gray-600">Select an available stall to assign to this horse.</p>
-          )}
-          
-          <select
-            value={selectedStall}
-            onChange={onChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            disabled={!!horse.stallId}       // ← only disabled when stallId is truthy
-          >
-            <option value="">Select a stall</option>
-            {availableStalls && availableStalls.length > 0 ? (
-              availableStalls.map(stall => (
-                <option key={stall._id} value={stall._id}>
-                  {stall.name} ({stall.size})
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>No available stalls found</option>
-            )}
-          </select>
-          
-          {/* Debug info */}
-          <div className="mt-2 text-xs text-gray-500">
-            Available stalls: {availableStalls ? availableStalls.length : 0}
-          </div>
-          
-          <div className="mt-4 flex justify-end gap-2">
-            <button onClick={onCancel} className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded">
-              Cancel
-            </button>
-            {!horse.stallId && (
-              <button onClick={onConfirm} className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
-                Confirm Assignment
-              </button>
-            )}
-            {horse.stallId && (
-              <button onClick={onUnassign} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
-                Unassign Current Stall
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div className="max-w-6xl mx-auto mt-8">
-      <div className="flex justify-between mb-6">
-        <button
-          onClick={() => { setShowForm(prev => !prev); setEditHorse(null); }}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded transition"
-        >
-          {showForm && !editHorse ? "Close form" : "Add new Horse"}
-        </button>
-        <button
-          onClick={() => setWaitingMode(prev => !prev)}
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition"
-        >
-          {waitingMode ? "Show All Horses" : "Show Waiting Horses"}
-        </button>
-      </div>
-      {showForm && (
-        <HorseForm
-          onSubmit={() => { setShowForm(false); setEditHorse(null); }}
-          initialData={editHorse || initialState}
-          editMode={!!editHorse}
-        />
-      )}
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {horses.map((horse) => (
-            <div key={horse._id} className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center border border-gray-200">
-              <h3 className="text-lg font-bold">{horse.name}</h3>
-              <p><span className="font-semibold">Owner:</span> {horse.ownerEmail || "-"}</p>
-              <p><span className="font-semibold">Breed:</span> {horse.breed}</p>
-              <p><span className="font-semibold">Age:</span> {horse.age || calculateAge(horse.birthDate)}</p>
-              {waitingMode && (
-                horse.stallId ? (
-                  <p className="text-green-600"><span className="font-semibold">Status:</span> {horse.status}</p>
-                ) : (
-                  <p className="text-amber-600"><span className="font-semibold">Status:</span> {horse.status}</p>
-                )
-              )}
-              <p><span className="font-semibold">Notes:</span> {horse.notes || "-"}</p>
-              <div className="flex flex-wrap gap-2 mt-4">
-                <button
-                  className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm font-semibold"
-                  onClick={() => handleEdit(horse)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                  onClick={() => handleDetails(horse)}
-                >
-                  Details
-                </button>
-                {horse.stallId
-                  ? (<button
-                      className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                      onClick={() => handleUnassignStall(horse)}
-                    >
-                      Unassign Stall
-                    </button>)
-                  : (<button
-                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                      onClick={() => handleAssignStall(horse)}
-                    >
-                      Assign Stall
-                    </button>)
-                }
-                <button
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm font-semibold"
-                  onClick={() => handleDeleteHorse(horse._id)}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Horse Management</h1>
+          <p className="text-gray-600">Manage your horses and stall assignments efficiently</p>
         </div>
-      )}
 
-      {assigningHorse && (
-        <AssignStallModal 
-          horse={assigningHorse}
-          availableStalls={availableStalls}
-          selectedStall={selectedStall}
-          onChange={(e) => setSelectedStall(e.target.value)}
-          onConfirm={handleConfirmAssign}
-          onCancel={handleCancelAssign}
-          onUnassign={handleModalUnassign}
-        />
-      )}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold text-gray-800">Horses</h2>
+            <button
+              onClick={() => { setShowForm(true); setEditHorse(null); }}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition duration-150 ease-in-out flex items-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Add Horse
+            </button>
+          </div>
 
-      {detailsHorseId && (
-        <HorseDetailsModal 
-          horseId={detailsHorseId} 
-          onClose={handleCloseDetails}
-          waitingMode={waitingMode}      // ← NEW
-        />
-      )}
+        {/* Horse Form Modal */}
+        {showForm && (
+          <HorseForm
+            onSubmit={() => { setShowForm(false); setEditHorse(null); }}
+            onCancel={() => { setShowForm(false); setEditHorse(null); }}
+            initialData={editHorse || initialState}
+            editMode={!!editHorse}
+          />
+        )}
+
+        {/* Loading State */}
+        {loading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
+          </div>
+        ) : horses.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="text-gray-400 mb-4">
+              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <p className="text-gray-500 text-lg">No horses found</p>
+            <p className="text-gray-400">Create your first horse to get started</p>
+          </div>
+        ) : (
+          /* Horse Cards Grid */
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {horses.map((horse) => (
+              <div key={horse._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-150">
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-lg font-semibold text-gray-800">{horse.name}</h3>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    horse.status === 'stall granted' ? 'bg-green-100 text-green-800' :
+                    horse.status === 'waiting for stall' ? 'bg-red-100 text-red-700' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {horse.status === 'stall granted' ? 'stall assigned' : 
+                     horse.status === 'waiting for stall' ? 'waiting for stall' : 
+                     'Unknown'}
+                  </span>
+                </div>
+                <div className="space-y-2 text-sm text-gray-600">
+                  <p><span className="font-medium">Owner:</span> {horse.ownerEmail || "Not assigned"}</p>
+                  <p><span className="font-medium">Breed:</span> {horse.breed}</p>
+                  <p><span className="font-medium">Age:</span> {horse.age || calculateAge(horse.birthDate)} years</p>
+                  {horse.notes && (
+                    <p><span className="font-medium">Notes:</span> {horse.notes}</p>
+                  )}
+                </div>
+                <div className="flex justify-between items-center mt-4 space-x-2">
+                  <button
+                    onClick={() => handleDetails(horse)}
+                    className="text-indigo-600 hover:text-indigo-800 transition duration-150"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => handleEdit(horse)}
+                    className="text-indigo-600 hover:text-indigo-800 transition duration-150"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  {horse.stallId ? (
+                    <button
+                      onClick={() => handleUnassignStall(horse)}
+                      className="text-yellow-600 hover:text-yellow-800 transition duration-150"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleAssignStall(horse)}
+                      className="text-green-600 hover:text-green-800 transition duration-150"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                      </svg>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDeleteHorse(horse._id)}
+                    className="text-red-600 hover:text-red-800 transition duration-150"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        </div>
+
+        {/* Modals */}
+        {assigningHorse && (
+          <AssignStallModal 
+            horse={assigningHorse}
+            availableStalls={availableStalls}
+            selectedStall={selectedStall}
+            onChange={(e) => setSelectedStall(e.target.value)}
+            onConfirm={handleConfirmAssign}
+            onCancel={handleCancelAssign}
+            onUnassign={handleModalUnassign}
+          />
+        )}
+
+        {detailsHorseId && (
+          <HorseDetailsModal 
+            horseId={detailsHorseId} 
+            onClose={handleCloseDetails}
+          />
+        )}
+      </div>
     </div>
   );
 };
