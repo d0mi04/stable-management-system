@@ -153,25 +153,56 @@ useEffect(() => {
     acc[date].push(event);
     return acc;
   }, {});
-  
-  
 
   return (
-    <div className="calendar-container">
-      <button onClick={() => login()}>🔐 Zaloguj się przez Google</button>
-      {error && <p className="error">{error}</p>}
+  <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-blue-100 to-indigo-200 py-10">
+    <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-4xl">
+      <h2 className="text-3xl font-bold text-center text-indigo-700 mb-8">
+        Kalendarz wydarzeń
+      </h2>
 
-      <div className="calendar-header">
-        <button onClick={() => setCurrentDate(currentDate.subtract(1, "month"))}>⬅️</button>
-        <h2>{currentDate.format("MMMM YYYY")}</h2>
-        <button onClick={() => setCurrentDate(currentDate.add(1, "month"))}>➡️</button>
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={() => login()}
+          className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+        >
+          🔐 Zaloguj się przez Google
+        </button>
       </div>
 
-      <div className="calendar-grid">
-        {["Nd", "Pn", "Wt", "Śr", "Cz", "Pt", "Sb"].map((d) => (
-          <div key={d} className="calendar-day-name">{d}</div>
-        ))}
+      {error && (
+        <p className="text-red-600 text-center mb-4 font-semibold">{error}</p>
+      )}
 
+      <div className="flex items-center justify-between mb-6">
+        <button
+          onClick={() => setCurrentDate(currentDate.subtract(1, "month"))}
+          className="text-indigo-600 hover:text-indigo-800 font-bold text-xl"
+          aria-label="Poprzedni miesiąc"
+        >
+          ⬅️
+        </button>
+        <h3 className="text-xl font-semibold text-gray-700">
+          {currentDate.format("MMMM YYYY")}
+        </h3>
+        <button
+          onClick={() => setCurrentDate(currentDate.add(1, "month"))}
+          className="text-indigo-600 hover:text-indigo-800 font-bold text-xl"
+          aria-label="Następny miesiąc"
+        >
+          ➡️
+        </button>
+      </div>
+
+      <div className="grid grid-cols-7 gap-1 text-center mb-4 text-sm font-semibold text-gray-600 select-none">
+        {["Nd", "Pn", "Wt", "Śr", "Cz", "Pt", "Sb"].map((d) => (
+          <div key={d} className="py-2">
+            {d}
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-7 gap-1">
         {days.map((day) => {
           const dateStr = day.format("YYYY-MM-DD");
           const gEvents = googleEventsByDate[dateStr] || [];
@@ -180,50 +211,81 @@ useEffect(() => {
           return (
             <div
               key={dateStr}
-              className={`calendar-cell ${day.month() !== currentDate.month() ? "other-month" : ""}`}
+              className={`border rounded p-2 h-40 flex flex-col ${
+                day.month() !== currentDate.month()
+                  ? "bg-gray-50 text-gray-400"
+                  : "bg-white"
+              }`}
             >
-              <div className="calendar-date">{day.date()}</div>
+              <div className="font-semibold mb-1">{day.date()}</div>
 
-              {gEvents.map((e) => (
-                <div key={e.id} className="event">
-                  📅 {e.summary || "(Brak tytułu)"}
-                </div>
-              ))}
+              <div className="overflow-auto text-xs space-y-1 flex-1">
+                {gEvents.map((e) => (
+                  <div key={e.id} className="bg-indigo-100 text-indigo-800 rounded px-1">
+                    📅 {e.summary || "(Brak tytułu)"}
+                  </div>
+                ))}
 
-              {lEvents.map((e) => (
-                <div key={e._id} className="event local-event">
-                  🗂 {e.title} {e.horseId?.name ? `– ${e.horseId.name}` : ""}
-                </div>
-
-              ))}
+                {lEvents.map((e) => (
+                  <div
+                    key={e._id}
+                    className="bg-green-100 text-green-800 rounded px-1"
+                    title={`Wydarzenie: ${e.title}`}
+                  >
+                    🗂 {e.title} {e.horseId?.name ? `– ${e.horseId.name}` : ""}
+                  </div>
+                ))}
+              </div>
             </div>
           );
         })}
       </div>
 
-      <hr style={{ margin: "2em 0" }} />
+      <hr className="my-8 border-gray-300" />
 
-      <h3>➕ Dodaj wydarzenie do Google</h3>
-      <div className="add-event-form">
+      <h3 className="text-2xl font-semibold text-indigo-700 mb-4">
+        ➕ Dodaj wydarzenie do Google
+      </h3>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          addEvent();
+        }}
+        className="space-y-4 max-w-md mx-auto"
+      >
         <input
           type="text"
           placeholder="Tytuł"
           value={newEvent.summary}
           onChange={(e) => setNewEvent({ ...newEvent, summary: e.target.value })}
+          required
+          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          autoFocus
         />
         <input
           type="date"
           value={newEvent.date}
           onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+          required
+          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
         <input
           type="time"
           value={newEvent.time}
           onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
+          required
+          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
-        <button onClick={addEvent}>Dodaj</button>
-      </div>
+        <button
+          type="submit"
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded transition duration-200"
+        >
+          Dodaj
+        </button>
+      </form>
     </div>
+  </div>
   );
 };
 
