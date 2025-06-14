@@ -49,6 +49,7 @@ async function seed() {
   // Insert Stable
   const stable = await Stable.create({
     name: "Sunny Stables",
+    fullName: "Sunny Stables Resort & Equestrian Center", // Add this required field
     location: "Countryside",
     capacity: 20,
     description: "Spacious and modern stable.",
@@ -83,12 +84,14 @@ async function seed() {
   const stalls = await Stall.insertMany([
     {
       stableId: stable._id,
+      name: `1-${stable.name}`, // Add name in format "number-STABLENAME"
       size: "large",
       status: "available",
       horseId: null
     },
     {
       stableId: stable._id,
+      name: `2-${stable.name}`, // Add name in format "number-STABLENAME"
       size: "medium",
       status: "available",
       horseId: null

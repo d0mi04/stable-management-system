@@ -11,15 +11,16 @@ const Schedule = () => {
   const [horses, setHorses] = useState([]);
   const [selectedHorseId, setSelectedHorseId] = useState("");
   
-
-
   const dateStr = date.toDateString();
+  
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    fetch(`${API_URL}horses`)
+    fetch(`${API_URL}horses`, {
+      headers: { Authorization: token ? `Bearer ${token}` : "" }
+    })
       .then(res => res.json())
       .then(data => {
-        // jeśli backend zwraca { horses: [...] }
         const list = Array.isArray(data) ? data : data.horses || [];
         setHorses(list);
       })
@@ -27,21 +28,24 @@ const Schedule = () => {
         console.error(err);
         setHorses([]);
       });
-  }, []);
-
-  // Pobierz wydarzenia dla wybranej daty
+  }, [token]);
+  
   useEffect(() => {
-	const dateStr = date.toDateString();
-    fetch(`${API_URL}events/${dateStr}`)
+    fetch(`${API_URL}events/${dateStr}`, {
+      headers: { Authorization: token ? `Bearer ${token}` : "" }
+    })
       .then((res) => res.json())
       .then(setEvents);
-  }, [date]);
+  }, [date, token, dateStr]);
 
   const handleAddEvent = async () => {
     if (!newEvent.trim() || !selectedHorseId) return;
     const res = await fetch(`${API_URL}events`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : ""
+      },
       body: JSON.stringify({ 
         date: dateStr, 
         title: newEvent,
@@ -54,9 +58,11 @@ const Schedule = () => {
     setSelectedHorseId("");
   };
 
-
   const handleRemoveEvent = async (id) => {
-    await fetch(`${API_URL}events/${id}`, { method: "DELETE" });
+    await fetch(`${API_URL}events/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: token ? `Bearer ${token}` : "" }
+    });
     setEvents((prev) => prev.filter((e) => e._id !== id));
   };
 
@@ -77,26 +83,25 @@ const Schedule = () => {
         ))}
       </ul>
 
-
       <select
         value={selectedHorseId}
         onChange={e => setSelectedHorseId(e.target.value)}
       >
-      <option value="">-- Wybierz konia --</option>
-        {(horses || []).map(horse => (
-        <option key={horse._id} value={horse._id}>
-          {horse.name}
-      </option>
-      ))}
+        <option value="">-- Wybierz konia --</option>
+        {horses.map(horse => (
+          <option key={horse._id} value={horse._id}>
+            {horse.name}
+          </option>
+        ))}
       </select>
-
+      
       <input
         type="text"
         placeholder="Opis wydarzenia"
         value={newEvent}
         onChange={(e) => setNewEvent(e.target.value)}
       />
-        <button onClick={handleAddEvent}>Dodaj wydarzenie</button>
+      <button onClick={handleAddEvent}>Dodaj wydarzenie</button>
     </div>
   );
 };
