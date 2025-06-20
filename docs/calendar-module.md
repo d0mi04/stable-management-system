@@ -17,6 +17,46 @@ Użytkownik po zalogowaniu do systemu ma dostęp do kalendarza zawierającego ty
 - Użytkownik może **zaimportować wydarzenia** z własnego Google Calendar do aplikacji (wymaga logowania do Google).
 - Możliwość **dodania wydarzenia do Google Calendar** bezpośrednio z aplikacji – użytkownik wybiera datę, godzinę i tytuł wydarzenia.
 
+#### 🔐 Autoryzacja
+
+Logowanie i autoryzacja odbywa się przy użyciu:
+- OAuth 2.0 (implicit flow)
+- Biblioteki `@react-oauth/google`
+- Trybu `ux_mode: redirect`
+
+#### 📥 Pobieranie wydarzeń
+
+Po uzyskaniu tokenu (`access_token`) wykonywane jest zapytanie:
+
+```
+GET https://www.googleapis.com/calendar/v3/calendars/primary/events?maxResults=2500
+```
+
+Pobrane wydarzenia są filtrowane i mapowane do lokalnego widoku kalendarza. Wydarzenia lokalne i z Google Calendar są prezentowane obok siebie, umożliwiając porównanie i synchronizację.
+
+#### ➕ Dodawanie wydarzeń
+
+Nowe wydarzenia są wysyłane poprzez zapytanie:
+
+```
+POST https://www.googleapis.com/calendar/v3/calendars/primary/events
+```
+
+Zawierające m.in.:
+- `summary`
+- `start.dateTime`
+- `end.dateTime`
+- `timeZone` (domyślnie: `Europe/Warsaw`)
+
+#### ⚠️ Obsługa błędów
+
+System obsługuje błędy:
+- logowania
+- komunikacji z Google API
+- komunikacji z lokalnym API
+
+W przypadku braku autoryzacji użytkownik otrzymuje stosowny komunikat.
+
 ---
 
 ## 🛠️ Funkcjonalność dla administratora
@@ -28,6 +68,30 @@ Administrator posiada rozszerzone możliwości zarządzania kalendarzem i wydarz
 - Po dodaniu:
   - Wydarzenie zostaje zapisane w bazie MongoDB.
   - Wysyłany jest **automatyczny e-mail** do właściciela konia z informacją o nowym wydarzeniu.
+
+## ✉️ Funkcjonalność: Wysyłanie e-maili po utworzeniu nowego wydarzenia
+
+Po dodaniu nowego wydarzenia system automatycznie wysyła e-mail do właściciela konia (`ownerEmail` z kolekcji `horses`).
+
+#### 📬 Przebieg działania
+
+1. Wybór konia (`selectedHorseId`)
+2. Odczyt danych konia:
+   ```js
+   const selectedHorse = horses.find(h => h._id === selectedHorseId);
+   const email = selectedHorse?.ownerEmail;
+   const horseName = selectedHorse?.name;
+   ```
+3. Formatowanie daty:
+   ```js
+   const formattedDate = `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+   ```
+4. Wysłanie e-maila:
+   ```js
+   const emailUrl = `https://send-email-381376669818.europe-west1.run.app?email=...`
+   ```
+
+Wysyłka realizowana jest jako `fetch`, bez oczekiwania na odpowiedź. Błędy są obsługiwane w bloku `try-catch`.
 
 #### 📧 Przykład wiadomości e-mail:
 ```
@@ -142,3 +206,51 @@ Na potrzeby implementacji funkcjonalności kalendarza zostały dopisane poniższ
   "message": "Wydarzenie usunięte"
 }
 ```
+
+---
+
+## ☁️ Funkcja serverless
+
+E-maile są wysyłane przez funkcję backendową w chmurze (Google Cloud Functions), napisaną w Pythonie z użyciem `smtplib`.
+
+Wymagane było:
+- Ustawienie weryfikacji dwuetapowej
+- Wygenerowanie hasła aplikacji (app password)
+
+---
+
+## 💾 Funkcjonalność: Local Storage (przechowywanie danych użytkownika)
+
+Po zalogowaniu dane użytkownika (ID i imię) są zapisywane w Local Storage:
+
+```js
+localStorage.setItem("userId", user.userId);
+localStorage.setItem("userName", user.username);
+```
+
+### 👤 Personalizacja UI
+
+Dzięki zapisanym danym możliwe jest:
+
+- Wyświetlenie powitania:
+  ```js
+  const username = localStorage.getItem("userName");
+  ```
+  ```jsx
+  <h2>Witaj, {username}!</h2>
+  ```
+
+- Ograniczenie dostępu do danych w kalendarzu
+- Przekierowanie na podstawie roli:
+  ```js
+  if (user.role === "admin") {
+    navigate("/admin");
+  }
+  ```
+
+### ⚠️ Uwagi dotyczące bezpieczeństwa
+
+- Dane w Local Storage nie są szyfrowane
+- Powinny zawierać wyłącznie informacje niepoufne
+
+---
