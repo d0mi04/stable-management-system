@@ -1,0 +1,660 @@
+{
+	"info": {
+		"_postman_id": "8cd7ec0d-65a3-4606-a955-f1e1531f0010",
+		"name": "stable-management-system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "44166293",
+		"_collection_link": "https://d0mi04-5758946.postman.co/workspace/stable-management-system~965c3dd0-0c3c-4b8c-b4cb-5a188751440c/collection/44166293-8cd7ec0d-65a3-4606-a955-f1e1531f0010?action=share&source=collection_link&creator=44166293"
+	},
+	"item": [
+		{
+			"name": "Autoryzacja i Rejestracja",
+			"item": [
+				{
+					"name": "/auth/register",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"user@example.com\",\r\n    \"username\": \"User\",\r\n    \"password\": \"userPassword123\"\r\n}"
+						},
+						"url": "http://localhost:5000/auth/register"
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/login",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"user@example.com\",\r\n    \"password\": \"userPassword123\"\r\n}"
+						},
+						"url": "http://localhost:5000/auth/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Horse",
+			"item": [
+				{
+					"name": "/horses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODQ4YjA4MzhhMGUxMDJhYTA1OWY1YjUiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc0OTY3NTUxMywiZXhwIjoxNzQ5Njc5MTEzfQ.-Esa7B2rN03txNGwukS03tpR_OGNXsjTcQBqtF3maPo",
+								"type": "text"
+							}
+						],
+						"url": "http://localhost:5000/horses"
+					},
+					"response": []
+				},
+				{
+					"name": "/horses/my-horses",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "/horses/waiting",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODQ3NDBmNGRlNTZjMzRlOGFmN2QwNWUiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ5NTExOTA4LCJleHAiOjE3NDk1MTU1MDh9.W3MgLNqPhTCba5nOXxpT2jX2IbX2yq6xjzpiw9f42y0",
+								"type": "text"
+							}
+						],
+						"url": "http://localhost:5000/horses/waiting"
+					},
+					"response": []
+				},
+				{
+					"name": "/horses/:horseID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODQ2MTZmMDcxYzk3OTk0MTEzM2ZlNDciLCJlbWFpbCI6InVzZXIzQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NDk1MTE2MjcsImV4cCI6MTc0OTUxNTIyN30.jwLcojM2aMWMi7JyVokn7X3DtjTLuhtr1er3JsYUA0I",
+								"type": "text"
+							}
+						],
+						"url": "http://localhost:5000/horses/68474d1784f035711bfab923"
+					},
+					"response": []
+				},
+				{
+					"name": "/horses",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODQ4YjA4MzhhMGUxMDJhYTA1OWY1YjUiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc0OTY1MTYzNCwiZXhwIjoxNzQ5NjU1MjM0fQ.mytvxJdQYm3VBYmPatg2jjJY7wxfEgT8gfTrT5iuits",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Kasztan\",\r\n    \"birthDate\": \"2020-04-14\",\r\n    \"breed\": \"koń śląski\",\r\n    \"notes\": \"nie wychodzi na padok\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/horses"
+					},
+					"response": []
+				},
+				{
+					"name": "/horses/:horseID/assign-stall",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODQ3NDBmNGRlNTZjMzRlOGFmN2QwNWUiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ5NTAzODIyLCJleHAiOjE3NDk1MDc0MjJ9.rWHRH4QB_tDJTiO_yBO_v1E92kPgo2IUVf2JVgPPBN8",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"stallID\": \"6847556de42b72b1776ce898\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/horses/68474d1784f035711bfab923/assign-stall"
+					},
+					"response": []
+				},
+				{
+					"name": "/horses/:horseID/unassign-stall",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODQ3NDBmNGRlNTZjMzRlOGFmN2QwNWUiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ5NTA1MDkzLCJleHAiOjE3NDk1MDg2OTN9.S9325Wat6I9kmV8GfXZPdwBNafMpBBnF6OvJDuVBQ88",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "http://localhost:5000/horses/68473c590359217acdc58503/unassign-stall"
+					},
+					"response": []
+				},
+				{
+					"name": "/horses/:horseID",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODQ3NDBmNGRlNTZjMzRlOGFmN2QwNWUiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ5NTA5MTIyLCJleHAiOjE3NDk1MTI3MjJ9.A_eARSzrYsTH5YXhnhyP5yuvyLZhMTXAtuY4NegzUBM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"notes\": \"ubierać na noc derkę\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/horses/68473c590359217acdc58503"
+					},
+					"response": []
+				},
+				{
+					"name": "/horses/:horseID",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODQ3NDBmNGRlNTZjMzRlOGFmN2QwNWUiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ5NTEwOTUyLCJleHAiOjE3NDk1MTQ1NTJ9.jszZceQXdi7VVozwCs8kX-YJsEJ_Bq3E_ISkrfByhEs",
+								"type": "text"
+							}
+						],
+						"url": "http://localhost:5000/horses/68475ca71e05972db8f55196"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Stall",
+			"item": [
+				{
+					"name": "/stalls",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/stalls"
+					},
+					"response": []
+				},
+				{
+					"name": "/stall/:stallID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/stalls/6845bc219668b2e32d9c2a52"
+					},
+					"response": []
+				},
+				{
+					"name": "/stalls",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"stableId\": \"6845bc219668b2e32d9c2a50\",\r\n    \"size\": \"large\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/stalls"
+					},
+					"response": []
+				},
+				{
+					"name": "/stalls/:stallID",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"stableId\": \"6845bc219668b2e32d9c2a50\",\r\n    \"size\": \"large\",\r\n    \"status\": \"available\",\r\n    \"horseId\": null,\r\n    \"__v\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/stalls/6845bc219668b2e32d9c2a52"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Staff",
+			"item": [
+				{
+					"name": "/staff",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/staff"
+					},
+					"response": []
+				},
+				{
+					"name": "/staff/:staffID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/staff/6845bc219668b2e32d9c2a4d"
+					},
+					"response": []
+				},
+				{
+					"name": "/staff",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Anna Nowak\",\r\n    \"phone\": 234567891,\r\n    \"email\": \"anna@example.com\",\r\n    \"role\": \"trainer\",\r\n    \"specialities\": [\r\n        \"jumping\",\r\n        \"eventing\"\r\n    ],\r\n    \"schedule\": [\r\n        \"Monday\",\r\n        \"Wednesday\",\r\n        \"Friday\",\r\n        \"Saturday\"\r\n    ]\r\n}"
+						},
+						"url": "http://localhost:5000/staff"
+					},
+					"response": []
+				},
+				{
+					"name": "/staff/:staffID",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Jan Kowalski\",\r\n    \"phone\": 123456789,\r\n    \"email\": \"jan2@example.com\",\r\n    \"role\": \"trainer\",\r\n    \"specialities\": [\r\n        \"dressage\"\r\n    ],\r\n    \"schedule\": [\r\n        \"Monday\",\r\n        \"Wednesday\"\r\n    ]\r\n}"
+						},
+						"url": "http://localhost:5000/staff/6845bc219668b2e32d9c2a4d"
+					},
+					"response": []
+				},
+				{
+					"name": "/staff/:staffID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:5000/staff/6845cbb2dce6bcffe720d804"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Stable",
+			"item": [
+				{
+					"name": "/stables",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/stables"
+					},
+					"response": []
+				},
+				{
+					"name": "/stables/:stableID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/stables/6845bc219668b2e32d9c2a50"
+					},
+					"response": []
+				},
+				{
+					"name": "/stables",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"GREEN\",\r\n    \"location\": \"stajnia z zielonym dachem\",\r\n    \"capacity\": 10,\r\n    \"description\": \"stajnia murowana\",\r\n    \"stallSize\": \"medium\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/stables"
+					},
+					"response": []
+				},
+				{
+					"name": "/stables/:stableID",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Sun Stable\",\r\n    \"location\": \"stajnia wzdłuż wschodniej ściany dużej ujeżdżalni\",\r\n    \"capacity\": 20,\r\n    \"description\": \"boksy z oknami\",\r\n    \"stallArray\": [\r\n        \"6845bc219668b2e32d9c2a52\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/stables/6845bc219668b2e32d9c2a50"
+					},
+					"response": []
+				},
+				{
+					"name": "stables/:stableID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:5000/stables/6845da9cdae155030685ea28"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "HorseActivities",
+			"item": [
+				{
+					"name": "/horseActivities",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/horseActivities"
+					},
+					"response": []
+				},
+				{
+					"name": "/horseActivities/:activityID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/horseActivities/6845bc219668b2e32d9c2a59"
+					},
+					"response": []
+				},
+				{
+					"name": "/horseActivities",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"horseId\": \"6845bc219668b2e32d9c2a55\",\r\n    \"date\": \"2025-07-12T18:00:00Z\",\r\n    \"durationMinutes\": 60,\r\n    \"allDay\": false,\r\n    \"type\": \"karuzela\",\r\n    \"notes\": \"na karuzelę ochraniacze\"\r\n}"
+						},
+						"url": "http://localhost:5000/horseActivities"
+					},
+					"response": []
+				},
+				{
+					"name": "/horseActivities/:activityID",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"horseId\": \"6845bc219668b2e32d9c2a55\",\r\n    \"date\": \"2025-07-12T19:00\",\r\n    \"durationMinutes\": 20,\r\n    \"allDay\": false,\r\n    \"type\": \"karuzela\",\r\n    \"notes\": \"na karuzelę ochraniacze\"\r\n}"
+						},
+						"url": "http://localhost:5000/horseActivities/6845fd4c5918bbe0fe3967a1"
+					},
+					"response": []
+				},
+				{
+					"name": "/horseActivities/:activityID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:5000/horseActivities/6845fd4c5918bbe0fe3967a1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Expense",
+			"item": [
+				{
+					"name": "/expenses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/expenses"
+					},
+					"response": []
+				},
+				{
+					"name": "/expenses/:expenseID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/expenses/6845bc219668b2e32d9c2a5d"
+					},
+					"response": []
+				},
+				{
+					"name": "/expenses",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"date\": \"2025-06-10\",\r\n    \"type\": \"expense\",\r\n    \"category\": \"maintenance\",\r\n    \"amount\": 1000,\r\n    \"description\": \"Arena footing replacement\"\r\n}"
+						},
+						"url": "http://localhost:5000/expenses"
+					},
+					"response": []
+				},
+				{
+					"name": "/expenses/:expenseID",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"date\": \"2025-06-01\",\r\n    \"type\": \"expense\",\r\n    \"category\": \"salary\",\r\n    \"relatedTo\": \"6845ccccdce6bcffe720d80c\",\r\n    \"relatedModel\": \"Staff\",\r\n    \"amount\": 3700,\r\n    \"description\": \"trainer's salary + bonus\"\r\n}"
+						},
+						"url": "http://localhost:5000/expenses/684604923dc1c110d1924744"
+					},
+					"response": []
+				},
+				{
+					"name": "/expenses/:expenseID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:5000/expenses/68470f15401b9b962f95d21e"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "inne",
+			"item": [
+				{
+					"name": "/events",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"date\": \"Wed Jun 17 2025\",\r\n    \"title\": \"weterynarz\",\r\n    \"horseId\": \"68476afa8ec93fa3a559a067\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/events"
+					},
+					"response": []
+				},
+				{
+					"name": "/events",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "/events/:date/:ownerId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/events/Wed Jun 11 2025/684616f071c979941133fe47"
+					},
+					"response": []
+				},
+				{
+					"name": "/events/:eventID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:5000/events/68489cf3283aee4d49fd1299"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
