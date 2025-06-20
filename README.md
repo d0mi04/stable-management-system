@@ -48,8 +48,8 @@ Utwórz plik `.env` w katalogu `\server\server` i dodaj do niego poniższe zmien
 
 ```bash
 PORT=5000
-MONGODB_URI=tu_wstaw_swoje_URI_do_MongoDB
-JWT_SECRET=sekretny_klucz_do_JWT
+MONGODB_URI=?
+JWT_SECRET=?
 ```
 Utwórz plik środowiskowy `.env` w katalogu `client\client` i dodaj do niego poniższe zmienne środowiskowe:
 
@@ -95,14 +95,46 @@ Możesz testować endpointy za pomocą narzędzi takich jak:
 ## 📁 Struktura katalogów
 
 ```
-stable-manager/
-├── 🗂️ controllers/
-├── 🗂️ middleware/
-├── 🗂️ models/
-├── 🗂️ routes/
-├── ⚙️ .env
-├── 🟨 server.js
-└── 📦 package.json
+stable-management-system/
+│
+├──  🗂️ client/
+│   └──  🗂️ client/
+│       ├──  🗂️ public/
+│       └──  🗂️ src/
+│           ├──  🗂️ components/        # Komponenty UI
+│           ├──  🗂️ context/           # Konteksty Reacta
+│           ├──  🗂️ pages/             # Widoki/strony aplikacji
+│           ├── App.js             # Główny komponent aplikacji
+│           ├── index.js           # Punkt wejściowy React
+│           └── index.css
+│       ├── .env           
+│       ├── README.md              
+│       ├── package.json           
+│       └── tailwind.config.js     # Konfiguracja Tailwinda
+│
+├──  🗂️ docs/                          
+│   ├── auth-system.md
+│   ├── calendar-module.md
+│   ├── horse-module.md
+│   ├── stable-module.md
+│   └── weather-integration.md
+│
+├──  🗂️ server/
+│   └──  🗂️ server/
+│       ├──  🗂️ controllers/           # Logika obsługi endpointów
+│       ├──  🗂️ middleware/            # Middleware do autoryzacji
+│       ├──  🗂️ models/                # Modele Mongoose - schema
+│       ├──  🗂️ routes/                # Definicje tras API
+│       ├── server.js              # Główny plik uruchamiający backend (Express + MongoDB)
+│       ├── seed.js                
+│       ├── .env                   
+│       ├── .gitignore
+│       ├── LICENSE
+│       └── README.md              
+│
+├── package.json                   
+└── README.md                    
+
 ```
 
 ---
@@ -115,6 +147,8 @@ stable-manager/
 - JSON Web Tokens (JWT)
 - dotenv
 - bcryptjs
+- tailwind
+- CSS
 
 ---
 
