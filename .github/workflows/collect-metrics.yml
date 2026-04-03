@@ -1,0 +1,48 @@
+name: Collect Enterprise Cloud Metrics
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Runs daily at 06:00 UTC
+  workflow_dispatch:        # Allows manual runs from the Actions tab
+
+jobs:
+  collect-metrics:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Generate a short-lived installation token from the GitHub App.
+      # The App ID and its private key must be stored as repository (or
+      # organisation) secrets named APP_ID and APP_PRIVATE_KEY.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install Python dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Collect Enterprise Cloud metrics
+        env:
+          # The installation token produced in the previous step is passed to
+          # the Python script through the standard GITHUB_TOKEN variable so
+          # that the script works the same way whether it is run locally (with
+          # a PAT) or inside Actions (with the App token).
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          # Set this variable (Settings → Variables) to the slug of your
+          # GitHub Enterprise Cloud organisation, e.g. "my-org".
+          GITHUB_ORG: ${{ vars.GITHUB_ORG }}
+        run: python scripts/collect_metrics.py
